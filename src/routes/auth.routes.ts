@@ -7,7 +7,10 @@ const router = express.Router();
 
 router.post("/google", AuthController.loginGoogle);
 router.post("/login", AuthController.login);
-router.get("/logout", AuthController.logout);
 router.post("/register", UserController.signup);
+
+router.post("/admin/login", AuthController.loginAdmin);
+router.post("/admin/google", AuthController.loginAdminGoogle);
+router.post("/admin/create", UserController.createAdmin);
 
 export default router;
