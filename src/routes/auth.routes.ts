@@ -1,8 +1,7 @@
 import express from "express";
 import * as AuthController from "../controllers/auth.controller";
 import * as UserController from "../controllers/user.controller";
-import passport from "passport";
-import { requireAuth } from "../middleware/requireAuth";
+import * as AdminController from "../controllers/admin.controller";
 const router = express.Router();
 
 router.post("/google", AuthController.loginGoogle);
@@ -11,6 +10,6 @@ router.post("/register", UserController.signup);
 
 router.post("/admin/login", AuthController.loginAdmin);
 router.post("/admin/google", AuthController.loginAdminGoogle);
-router.post("/admin/create", UserController.createAdmin);
+router.post("/admin/create", AdminController.createAdmin);
 
 export default router;

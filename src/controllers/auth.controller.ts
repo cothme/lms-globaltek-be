@@ -144,8 +144,6 @@ export const loginAdminGoogle: RequestHandler<
   SignUpGoogle,
   unknown
 > = async (req, res, next) => {
-  const given_name = req.body.given_name;
-  const family_name = req.body.family_name;
   const email = req.body.email;
 
   try {
@@ -158,11 +156,8 @@ export const loginAdminGoogle: RequestHandler<
         email: user.email,
         jwt: token,
       });
-    } else {
-      res.status(500).json({ error: "No account" });
-
-      throw createHttpError(500, "No account found!");
     }
+    throw createHttpError(500, "No account found!");
   } catch (error) {
     next(error);
   }

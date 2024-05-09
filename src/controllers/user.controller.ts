@@ -112,12 +112,11 @@ export const createAdmin: RequestHandler<
       password: passwordHashed,
       isFromGoogle: false,
     });
-    const token = createToken(newUser as SignUpBody);
+
     res.status(201).json({
       family_name: newUser.family_name,
       given_name: newUser.given_name,
       email: newUser.email,
-      jwt: token,
     });
   } catch (error) {
     next(error);
