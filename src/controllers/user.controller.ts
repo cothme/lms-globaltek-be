@@ -146,6 +146,21 @@ export const getUser: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const getAllUser: RequestHandler = async (req, res, next) => {
+  try {
+    const user = await UserModel.find().sort({ createdAt: -1 });
+    if (!user) {
+      throw createHttpError(404, "User not found");
+    }
+    return res.status(200).json({
+      user: user,
+      userCount: user.length,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updateuser: RequestHandler<
   UpdateUserParams,
   unknown,
@@ -173,7 +188,25 @@ export const updateuser: RequestHandler<
     );
 
     const userUpdated = await UserModel.findById({ _id: userId });
-    return res.status(200).json({ data: userUpdated });
+    return res.status(200).json({ userUpdated });
+  } catch (error) {
+    next(error);
+  }
+};
+export const deleteNote: RequestHandler = async (req, res, next) => {
+  const { userId } = req.params;
+
+  try {
+    if (!mongoose.isValidObjectId(userId)) {
+      throw createHttpError(500, "Invalid note ID");
+    }
+    const user = await UserModel.findById({ _id: userId }).exec();
+    if (!user) {
+      throw createHttpError(404, "User not found");
+    }
+    await UserModel.deleteOne({ _id: userId });
+
+    return res.sendStatus(204);
   } catch (error) {
     next(error);
   }

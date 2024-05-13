@@ -39,7 +39,7 @@ const createToken = (user: userDetails) => {
     },
     String(process.env.SECRET),
     {
-      expiresIn: "2d",
+      expiresIn: "2h",
     }
   );
 };

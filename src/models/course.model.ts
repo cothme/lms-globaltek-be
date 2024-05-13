@@ -10,8 +10,14 @@ const courseSchema = new Schema({
     type: String,
     required: true,
   },
-  topics: {},
-  announcement: {},
+  topics: {
+    type: [],
+    required: false,
+  },
+  announcement: {
+    type: [],
+    required: false,
+  },
 });
 
 type Course = InferSchemaType<typeof courseSchema>;
