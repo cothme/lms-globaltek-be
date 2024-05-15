@@ -10,7 +10,7 @@ const adminSchema = new Schema(
       type: String,
       required: false,
     },
-    username: {
+    user_name: {
       type: String,
       required: true,
       unique: true,

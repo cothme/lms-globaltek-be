@@ -9,6 +9,7 @@ import AdminModel from "../models/admin.model";
 interface SignUpBody {
   family_name?: string;
   given_name?: string;
+  user_name?: string;
   email?: string;
   password?: string;
   c_password?: string;
@@ -23,6 +24,7 @@ export const createAdmin: RequestHandler<
 > = async (req, res, next) => {
   const given_name = req.body.given_name;
   const family_name = req.body.family_name;
+  const user_name = req.body.user_name;
   const email = req.body.email;
   const passwordRaw = req.body.password;
   const c_password = req.body.c_password;
@@ -46,6 +48,7 @@ export const createAdmin: RequestHandler<
     const newUser = await AdminModel.create({
       given_name: given_name,
       family_name: family_name,
+      user_name: user_name,
       email: email,
       password: passwordHashed,
       isFromGoogle: false,

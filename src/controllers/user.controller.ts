@@ -62,52 +62,6 @@ export const signup: RequestHandler<
   }
 };
 
-export const createAdmin: RequestHandler<
-  unknown,
-  unknown,
-  SignUpBody,
-  unknown
-> = async (req, res, next) => {
-  const given_name = req.body.given_name;
-  const family_name = req.body.family_name;
-  const email = req.body.email;
-  const passwordRaw = req.body.password;
-  const c_password = req.body.c_password;
-
-  try {
-    if (passwordRaw !== c_password) {
-      throw createHttpError(422, "Password does not match!");
-    }
-    if (!given_name || !family_name || !email || !passwordRaw) {
-      throw createHttpError(400, "Parameters missing");
-    }
-
-    const existingEmail = await AdminModel.findOne({ email: email }).exec();
-
-    if (existingEmail) {
-      throw createHttpError(409, "Email already taken");
-    }
-
-    const passwordHashed = await bcrypt.hash(passwordRaw, 10);
-
-    const newUser = await AdminModel.create({
-      given_name: given_name,
-      family_name: family_name,
-      email: email,
-      password: passwordHashed,
-      isFromGoogle: false,
-    });
-
-    res.status(201).json({
-      family_name: newUser.family_name,
-      given_name: newUser.given_name,
-      email: newUser.email,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 interface UpdateUserParams {
   userId: string;
 }
