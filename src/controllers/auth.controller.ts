@@ -5,6 +5,7 @@ import AdminModel from "../models/admin.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { createToken } from "../helpers/createToken";
 
 dotenv.config();
 
@@ -28,21 +29,6 @@ interface SignUpGoogle {
   email?: string;
   isFromGoogle?: Boolean;
 }
-
-const maxAge = 3 * 24 * 60 * 60;
-const createToken = (user: userDetails) => {
-  return jwt.sign(
-    {
-      given_name: user.given_name,
-      family_name: user.family_name,
-      email: user.email,
-    },
-    String(process.env.SECRET),
-    {
-      expiresIn: "2h",
-    }
-  );
-};
 
 export const login: RequestHandler = async (req, res, next) => {
   const { email, password } = req.body;

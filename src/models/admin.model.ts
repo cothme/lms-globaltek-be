@@ -10,6 +10,12 @@ const adminSchema = new Schema(
       type: String,
       required: false,
     },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      select: true,
+    },
     email: {
       type: String,
       required: true,

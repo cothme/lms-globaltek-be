@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import AdminModel from "../models/admin.model";
+import { createToken } from "../helpers/createToken";
 
 interface SignUpBody {
   family_name?: string;
@@ -14,21 +15,6 @@ interface SignUpBody {
   c_password?: string;
   isFromGoogle?: Boolean;
 }
-
-const createToken = (user: SignUpBody) => {
-  return jwt.sign(
-    {
-      // id: id,
-      given_name: user.given_name,
-      family_name: user.family_name,
-      email: user.email,
-    },
-    String(process.env.SECRET),
-    {
-      expiresIn: "10h",
-    }
-  );
-};
 
 export const signup: RequestHandler<
   unknown,
@@ -65,12 +51,11 @@ export const signup: RequestHandler<
       password: passwordHashed,
       isFromGoogle: false,
     });
-    const token = createToken(newUser as SignUpBody);
+
     res.status(201).json({
       family_name: newUser.family_name,
       given_name: newUser.given_name,
       email: newUser.email,
-      jwt: token,
     });
   } catch (error) {
     next(error);
@@ -174,7 +159,7 @@ export const updateuser: RequestHandler<
     if (!mongoose.isValidObjectId(userId)) {
       throw createHttpError(500, "Invalid User ID");
     }
-    if (!given_name || !family_name || !email || !password) {
+    if (!given_name || !family_name || !email) {
       throw createHttpError(400, "Parameters missing");
     }
     const user = await UserModel.findOne({ _id: userId }).exec();
@@ -206,7 +191,7 @@ export const deleteNote: RequestHandler = async (req, res, next) => {
     }
     await UserModel.deleteOne({ _id: userId });
 
-    return res.sendStatus(204);
+    return res.sendStatus(200);
   } catch (error) {
     next(error);
   }
