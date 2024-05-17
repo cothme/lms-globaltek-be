@@ -117,12 +117,7 @@ export const getAllUser: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const updateuser: RequestHandler<
-  UpdateUserParams,
-  unknown,
-  UpdateUserBody,
-  unknown
-> = async (req, res, next) => {
+export const updateuser: RequestHandler = async (req, res, next) => {
   try {
     const { userId } = req.params;
     const { given_name, family_name, email, password } = req.body;

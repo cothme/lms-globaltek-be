@@ -6,6 +6,7 @@ import notesRouter from "./routes/notes.route";
 import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
 import courseRouter from "./routes/course.routes";
+import adminRouter from "./routes/admin.routes";
 
 import express, { Express, NextFunction, Request, Response } from "express";
 import createHttpError, { isHttpError } from "http-errors";
@@ -20,6 +21,7 @@ app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/notes", notesRouter);
 app.use("/api/course", courseRouter);
+app.use("/api/admin/", adminRouter);
 
 app.use((req, res, next) => {
   next(createHttpError(404, "Endpoint not found"));

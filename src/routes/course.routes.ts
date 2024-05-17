@@ -1,14 +1,13 @@
 import express from "express";
-import { requireAuth } from "../middleware/requireAuth";
+import { requireAdminAuth } from "../middleware/requireAdminAuth";
 import * as CourseController from "../controllers/course.controller";
 
 const router = express.Router();
-router.use(requireAuth);
 
-router.get("/", CourseController.getCourses);
-router.post("/", CourseController.createCourse);
-router.get("/:courseId", CourseController.getCourse);
-router.patch("/:courseId", CourseController.updateCourse);
-router.delete("/:courseId", CourseController.deleteCourse);
+router.get("/", requireAdminAuth, CourseController.getCourses);
+router.post("/", requireAdminAuth, CourseController.createCourse);
+router.get("/:courseId", requireAdminAuth, CourseController.getCourse);
+router.patch("/:courseId", requireAdminAuth, CourseController.updateCourse);
+router.delete("/:courseId", requireAdminAuth, CourseController.deleteCourse);
 
 export default router;

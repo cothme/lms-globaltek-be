@@ -1,6 +1,5 @@
 import express from "express";
 import * as UserController from "../controllers/user.controller";
-import { requireUserAuth } from "../middleware/requireUserAuth";
 import { requireAdminAuth } from "../middleware/requireAdminAuth";
 
 const router = express.Router();
@@ -12,8 +11,8 @@ router.get(
   requireAdminAuth,
   UserController.getNumberOfUsers
 );
-router.get("/:userId", UserController.getUser);
-router.patch("/:userId", UserController.updateuser);
-router.delete("/:userId", UserController.deleteNote);
+router.get("/:userId", requireAdminAuth, UserController.getUser);
+router.patch("/:userId", requireAdminAuth, UserController.updateuser);
+router.delete("/:userId", requireAdminAuth, UserController.deleteNote);
 
 export default router;

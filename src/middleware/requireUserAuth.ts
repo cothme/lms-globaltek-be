@@ -2,13 +2,14 @@ import createHttpError from "http-errors";
 import mongoose from "mongoose";
 import { RequestHandler, response } from "express";
 import UserModel from "../models/user.model";
+import AdminModel from "../models/admin.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-export const requireAuth: RequestHandler = (req, res, next) => {
+export const requireUserAuth: RequestHandler = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization) {
