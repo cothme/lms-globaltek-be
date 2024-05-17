@@ -52,7 +52,7 @@ export const login: RequestHandler = async (req, res, next) => {
       }
       throw createHttpError(500, "Invalid credentials");
     }
-    throw createHttpError(500, "No account");
+    throw createHttpError(500, "Invalid credentials");
   } catch (error) {
     next(error);
   }
@@ -120,7 +120,7 @@ export const loginAdmin: RequestHandler = async (req, res, next) => {
       }
       throw createHttpError(500, "Invalid credentials");
     }
-    throw createHttpError(500, "No account");
+    throw createHttpError(500, "Invalid credentials");
   } catch (error) {
     next(error);
   }

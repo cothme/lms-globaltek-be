@@ -10,6 +10,7 @@ import { createToken } from "../helpers/createToken";
 interface SignUpBody {
   family_name?: string;
   given_name?: string;
+  user_name?: string;
   email?: string;
   password?: string;
   c_password?: string;
@@ -24,6 +25,7 @@ export const signup: RequestHandler<
 > = async (req, res, next) => {
   const given_name = req.body.given_name;
   const family_name = req.body.family_name;
+  const user_name = req.body.user_name;
   const email = req.body.email;
   const passwordRaw = req.body.password;
   const c_password = req.body.c_password;
@@ -32,7 +34,7 @@ export const signup: RequestHandler<
     if (passwordRaw !== c_password) {
       throw createHttpError(422, "Password does not match!");
     }
-    if (!given_name || !family_name || !email || !passwordRaw) {
+    if (!given_name || !family_name || !email || !user_name || !passwordRaw) {
       throw createHttpError(400, "Parameters missing");
     }
 
@@ -42,11 +44,20 @@ export const signup: RequestHandler<
       throw createHttpError(409, "Email already taken");
     }
 
+    const existingUsername = await UserModel.findOne({
+      user_name: user_name,
+    }).exec();
+
+    if (existingUsername) {
+      throw createHttpError(409, "Username already taken");
+    }
+
     const passwordHashed = await bcrypt.hash(passwordRaw, 10);
 
     const newUser = await UserModel.create({
       given_name: given_name,
       family_name: family_name,
+      user_name: user_name,
       email: email,
       password: passwordHashed,
       isFromGoogle: false,
@@ -55,6 +66,7 @@ export const signup: RequestHandler<
     res.status(201).json({
       family_name: newUser.family_name,
       given_name: newUser.given_name,
+      user_name: newUser.user_name,
       email: newUser.email,
     });
   } catch (error) {
