@@ -19,6 +19,7 @@ interface userDetails {
 interface adminDetails {
   given_name?: string;
   family_name?: string;
+  user_name?: string;
   email?: string;
   password?: string;
 }
@@ -98,13 +99,13 @@ export const loginGoogle: RequestHandler<
 };
 
 export const loginAdmin: RequestHandler = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { user_name, password } = req.body;
 
   try {
-    if (!email || !password) {
+    if (!user_name || !password) {
       throw createHttpError(422, "Missing fields!");
     }
-    const user = await AdminModel.findOne({ email: email });
+    const user = await AdminModel.findOne({ user_name: user_name });
     if (user) {
       const auth = await bcrypt.compare(password, String(user.password));
       if (auth) {
@@ -112,6 +113,7 @@ export const loginAdmin: RequestHandler = async (req, res, next) => {
         return res.status(200).json({
           family_name: user.family_name,
           given_name: user.given_name,
+          user_name: user.user_name,
           email: user.email,
           jwt: token,
         });

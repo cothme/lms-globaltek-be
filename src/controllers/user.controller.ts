@@ -85,15 +85,32 @@ export const getUser: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const getAllUser: RequestHandler = async (req, res, next) => {
+export const getNumberOfUsers: RequestHandler = async (req, res, next) => {
   try {
-    const user = await UserModel.find().sort({ createdAt: -1 });
-    if (!user) {
+    const { numberOfUsers } = req.params;
+    const limit = parseInt(numberOfUsers);
+    const users = await UserModel.find().sort({ createdAt: -1 }).limit(limit);
+    if (!users) {
       throw createHttpError(404, "User not found");
     }
     return res.status(200).json({
-      user: user,
-      userCount: user.length,
+      user: users,
+      userCount: users.length,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllUser: RequestHandler = async (req, res, next) => {
+  try {
+    const users = await UserModel.find().sort({ createdAt: -1 });
+    if (!users) {
+      throw createHttpError(404, "User not found");
+    }
+    return res.status(200).json({
+      users: users,
+      userCount: users.length,
     });
   } catch (error) {
     next(error);

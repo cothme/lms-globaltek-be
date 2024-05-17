@@ -10,6 +10,10 @@ const courseSchema = new Schema({
     type: String,
     required: true,
   },
+  course_description: {
+    type: String,
+    required: false,
+  },
   topics: {
     type: [],
     required: false,
