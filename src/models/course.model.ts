@@ -6,14 +6,20 @@ const courseSchema = new Schema({
     required: true,
     unique: true,
   },
-  course_type: {
-    type: String,
-    required: true,
-  },
   course_description: {
     type: String,
     required: false,
   },
+  instructor: {
+    type: String,
+    required: false,
+  },
+  subscribers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   topics: {
     type: [],
     required: false,
@@ -21,6 +27,10 @@ const courseSchema = new Schema({
   announcement: {
     type: [],
     required: false,
+  },
+  difficulty: {
+    type: Number,
+    required: true,
   },
 });
 
