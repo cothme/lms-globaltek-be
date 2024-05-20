@@ -27,6 +27,7 @@ interface adminDetails {
 interface SignUpGoogle {
   family_name?: string;
   given_name?: string;
+  name?: string;
   email?: string;
   isFromGoogle?: Boolean;
 }
@@ -66,6 +67,7 @@ export const loginGoogle: RequestHandler<
 > = async (req, res, next) => {
   const given_name = req.body.given_name;
   const family_name = req.body.family_name;
+  const user_name = req.body.name;
   const email = req.body.email;
 
   try {
@@ -74,6 +76,7 @@ export const loginGoogle: RequestHandler<
       const userCreated = await UserModel.create({
         given_name: given_name,
         family_name: family_name,
+        user_name: user_name,
         email: email,
         isFromGoogle: true,
       });
