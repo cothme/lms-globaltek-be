@@ -49,17 +49,7 @@ userSchema.statics.aaa = async function (email, password) {
   }
   throw createHttpError(500, "Incorrect credentials");
 };
-// userSchema.method("login", async (email, password) => {
-//   const user = await this.findOne({ email });
-//   if (user) {
-//     const auth = await bcrypt.compare(password, user.password);
-//     if (auth) {
-//       return user;
-//     }
-//     throw createHttpError(500, "Incorrect credentials");
-//   }
-//   throw createHttpError(500, "Incorrect credentials");
-// });
+
 type User = InferSchemaType<typeof userSchema>;
 
 export default model<User>("User", userSchema);
