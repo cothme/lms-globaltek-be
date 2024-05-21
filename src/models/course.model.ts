@@ -10,6 +10,11 @@ const courseSchema = new Schema({
     type: String,
     required: false,
   },
+  published: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   instructor: {
     type: String,
     required: false,
