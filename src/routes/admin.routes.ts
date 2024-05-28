@@ -1,11 +1,12 @@
 import express from "express";
 import * as UserController from "../controllers/user.controller";
 import { requireAdminAuth } from "../middleware/requireAdminAuth";
+import * as AdminController from "../controllers/admin.controller";
 
 const router = express.Router();
 // router.use(requireUserAuth);
 
-router.get("/", requireAdminAuth, UserController.getAllUser);
+router.get("/", requireAdminAuth, AdminController.getAllAdmin);
 router.get(
   "/count/:numberOfUsers",
   requireAdminAuth,

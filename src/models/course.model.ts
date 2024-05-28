@@ -1,23 +1,35 @@
 import { InferSchemaType, Model, model, Schema } from "mongoose";
 
 const courseSchema = new Schema({
-  course_name: {
+  course_title: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  course_code: {
     type: String,
     required: true,
     unique: true,
   },
   course_description: {
     type: String,
-    required: false,
+    required: true,
   },
   published: {
     type: Boolean,
-    required: true,
+    required: false,
     default: false,
   },
-  instructor: {
+  publisher: {
     type: String,
-    required: false,
+    ref: "Admin",
+    required: true,
+    unique: false,
+  },
+  required_subscription: {
+    type: String,
+    required: true,
+    default: "Free",
   },
   subscribers: [
     {
@@ -35,7 +47,7 @@ const courseSchema = new Schema({
   },
   difficulty: {
     type: Number,
-    required: true,
+    required: false,
   },
 });
 

@@ -15,7 +15,20 @@ interface SignUpBody {
   c_password?: string;
   isFromGoogle?: Boolean;
 }
-
+export const getAllAdmin: RequestHandler = async (req, res, next) => {
+  try {
+    const admins = await AdminModel.find().sort({ createdAt: -1 });
+    if (!admins) {
+      throw createHttpError(404, "User not found");
+    }
+    return res.status(200).json({
+      users: admins,
+      adminCount: admins.length,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 export const createAdmin: RequestHandler<
   unknown,
   unknown,

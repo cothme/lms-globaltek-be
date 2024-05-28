@@ -9,5 +9,11 @@ router.post("/", requireAdminAuth, CourseController.createCourse); //done
 router.get("/:courseId", CourseController.getCourse); //done
 router.patch("/:courseId", requireAdminAuth, CourseController.updateCourse); //done
 router.delete("/:courseId", requireAdminAuth, CourseController.deleteCourse);
+router.patch("/publish/:courseId", CourseController.togglePublish);
+router.get(
+  "/mycourses/:courseId",
+  requireAdminAuth,
+  CourseController.getAllOwnedCourses
+);
 
 export default router;

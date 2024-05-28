@@ -45,7 +45,9 @@ export const login: RequestHandler = async (req, res, next) => {
       if (auth) {
         const token = createToken(user as userDetails);
         return res.status(200).json({
+          id: user.id,
           family_name: user.family_name,
+          user_name: user.user_name,
           given_name: user.given_name,
           email: user.email,
           jwt: token,
@@ -86,6 +88,7 @@ export const loginGoogle: RequestHandler<
       if (user) {
         const token = createToken(user as userDetails);
         return res.status(200).json({
+          id: user.id,
           family_name: user.family_name,
           given_name: user.given_name,
           email: user.email,
@@ -114,6 +117,7 @@ export const loginAdmin: RequestHandler = async (req, res, next) => {
       if (auth) {
         const token = createToken(user as adminDetails);
         return res.status(200).json({
+          id: user.id,
           family_name: user.family_name,
           given_name: user.given_name,
           user_name: user.user_name,
@@ -142,7 +146,9 @@ export const loginAdminGoogle: RequestHandler<
     if (user) {
       const token = createToken(user as userDetails);
       return res.status(200).json({
+        id: user.id,
         family_name: user.family_name,
+        user_name: user.user_name,
         given_name: user.given_name,
         email: user.email,
         jwt: token,

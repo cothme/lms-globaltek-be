@@ -3,9 +3,8 @@ import createHttpError from "http-errors";
 import UserModel from "../models/user.model";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
-import jwt from "jsonwebtoken";
-import AdminModel from "../models/admin.model";
-import { createToken } from "../helpers/createToken";
+import multer from "multer";
+import { upload } from "../helpers/fileUpload";
 
 interface SignUpBody {
   family_name?: string;
@@ -15,8 +14,21 @@ interface SignUpBody {
   password?: string;
   c_password?: string;
   isFromGoogle?: Boolean;
+  picture?: String;
 }
+export const uploadFile: RequestHandler = (req, res, next) => {
+  upload.single("file")(req, res, (err) => {
+    if (err) {
+      return next(err);
+    }
 
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    return res.status(200).json({ file: req.file });
+  });
+};
 export const signup: RequestHandler<
   unknown,
   unknown,
@@ -29,6 +41,7 @@ export const signup: RequestHandler<
   const email = req.body.email;
   const passwordRaw = req.body.password;
   const c_password = req.body.c_password;
+  const picture = req.body.picture;
 
   try {
     if (passwordRaw !== c_password) {
@@ -61,6 +74,7 @@ export const signup: RequestHandler<
       email: email,
       password: passwordHashed,
       isFromGoogle: false,
+      picture: picture,
     });
 
     res.status(201).json({
@@ -132,7 +146,7 @@ export const getAllUser: RequestHandler = async (req, res, next) => {
 export const updateuser: RequestHandler = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const { given_name, family_name, email, password } = req.body;
+    const { given_name, family_name, email, password, picture } = req.body;
 
     if (!mongoose.isValidObjectId(userId)) {
       throw createHttpError(500, "Invalid User ID");
@@ -147,7 +161,7 @@ export const updateuser: RequestHandler = async (req, res, next) => {
 
     await UserModel.updateOne(
       { _id: userId },
-      { given_name, family_name, email, password }
+      { given_name, family_name, email, password, picture }
     );
 
     const userUpdated = await UserModel.findById({ _id: userId });

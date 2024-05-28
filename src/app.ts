@@ -14,7 +14,7 @@ import createHttpError, { isHttpError } from "http-errors";
 const app: Express = express();
 
 app.use(cors());
-
+app.use(express.static("uploads"));
 app.use(express.json());
 
 app.use("/api/user", userRouter);

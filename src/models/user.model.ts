@@ -32,6 +32,10 @@ const userSchema = new Schema(
       type: Boolean,
       required: false,
     },
+    picture: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,
