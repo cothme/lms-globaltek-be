@@ -6,6 +6,11 @@ const router = express.Router();
 
 router.get("/", requireAdminAuth, CourseController.getAllCourses); //done
 router.post("/", requireAdminAuth, CourseController.createCourse); //done
+router.get(
+  "/published/",
+  requireAdminAuth,
+  CourseController.getPublishedCourses
+);
 router.get("/:courseId", CourseController.getCourse); //done
 router.patch("/:courseId", requireAdminAuth, CourseController.updateCourse); //done
 router.delete("/:courseId", requireAdminAuth, CourseController.deleteCourse);

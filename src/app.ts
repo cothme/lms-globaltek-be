@@ -2,7 +2,6 @@ import dotenv from "dotenv";
 import cors from "cors";
 dotenv.config();
 
-import notesRouter from "./routes/notes.route";
 import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
 import courseRouter from "./routes/course.routes";
@@ -19,7 +18,6 @@ app.use(express.json());
 
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
-app.use("/api/notes", notesRouter);
 app.use("/api/course", courseRouter);
 app.use("/api/admin/", adminRouter);
 
