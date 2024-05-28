@@ -45,10 +45,6 @@ const courseSchema = new Schema({
     type: [],
     required: false,
   },
-  difficulty: {
-    type: Number,
-    required: false,
-  },
 });
 
 type Course = InferSchemaType<typeof courseSchema>;

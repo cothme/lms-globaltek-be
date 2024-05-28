@@ -1,10 +1,13 @@
 import { RequestHandler } from "express";
 import createHttpError from "http-errors";
 import UserModel from "../models/user.model";
+import CourseModel from "../models/course.model";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import multer from "multer";
 import { upload } from "../helpers/fileUpload";
+import { jwtDecode } from "jwt-decode";
+import User from "../interfaces/User";
 
 interface SignUpBody {
   family_name?: string;
@@ -187,4 +190,24 @@ export const deleteNote: RequestHandler = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+export const enrollUser: RequestHandler = async (req, res, next) => {
+  const { courseId } = req.params;
+  const token = String(req.headers.authorization);
+  const user = jwtDecode(token) as User;
+  const userId = user._id;
+
+  const addCoursetoUser = await UserModel.updateOne(
+    { _id: userId },
+    { $addToSet: { courses_enrolled: courseId } }
+  );
+  const addUsertoCourse = await CourseModel.updateOne(
+    { _id: courseId },
+    { $addToSet: { subscribers: userId } }
+  );
+
+  return res
+    .status(200)
+    .json({ user: addCoursetoUser, course: addUsertoCourse });
 };

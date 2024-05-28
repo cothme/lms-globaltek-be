@@ -4,7 +4,6 @@ export default interface Course {
   course_description?: string;
   course_code?: string;
   publisher?: string;
-  difficulty?: string;
   required_subscription?: string;
   published?: boolean;
 }

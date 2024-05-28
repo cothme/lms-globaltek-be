@@ -13,7 +13,7 @@ interface SignUpBody {
 export const createToken = (user: SignUpBody) => {
   return jwt.sign(
     {
-      id: user._id,
+      _id: user._id,
       given_name: user.given_name,
       user_name: user.user_name,
       family_name: user.family_name,

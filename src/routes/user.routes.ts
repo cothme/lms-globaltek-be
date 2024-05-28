@@ -14,6 +14,7 @@ router.get(
   requireAdminAuth,
   UserController.getNumberOfUsers
 );
+router.post("/enroll/:courseId", UserController.enrollUser);
 router.get("/:userId", UserController.getUser);
 router.patch("/:userId", UserController.updateuser);
 router.delete("/:userId", UserController.deleteNote);

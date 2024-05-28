@@ -24,6 +24,10 @@ const userSchema = new Schema(
       unique: true,
       select: true,
     },
+    subscription_tier: {
+      type: String,
+      required: false,
+    },
     password: {
       type: String,
       required: false,
@@ -36,23 +40,17 @@ const userSchema = new Schema(
       type: String,
       required: false,
     },
+    courses_enrolled: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Courses",
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
-
-userSchema.statics.aaa = async function (email, password) {
-  const user = await this.findOne({ email });
-  if (user) {
-    const auth = await bcrypt.compare(password, user.password);
-    if (auth) {
-      return user;
-    }
-    throw createHttpError(500, "Incorrect credentials");
-  }
-  throw createHttpError(500, "Incorrect credentials");
-};
 
 type User = InferSchemaType<typeof userSchema>;
 

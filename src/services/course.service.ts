@@ -1,13 +1,4 @@
-import {
-  findCourseByCodeOrTitle,
-  createCourse,
-  getAllCourse,
-  getCourseById,
-  updateCourse,
-  deleteCourse,
-  publishCourse,
-  getPublishedCourses,
-} from "../repositories/course.repository";
+import * as CourseRepository from "../repositories/course.repository";
 import createHttpError from "http-errors";
 import Course from "../interfaces/Course";
 import { jwtDecode } from "jwt-decode";
@@ -20,7 +11,6 @@ export const createNewCourseService = async (courseData: Course) => {
     course_description,
     course_code,
     publisher,
-    difficulty,
     required_subscription,
     published,
   } = courseData;
@@ -39,7 +29,7 @@ export const createNewCourseService = async (courseData: Course) => {
     throw createHttpError(400, "Course must have a title");
   }
 
-  const existingCourse = await findCourseByCodeOrTitle(
+  const existingCourse = await CourseRepository.findCourseByCodeOrTitle(
     course_code,
     course_title
   );
@@ -47,23 +37,22 @@ export const createNewCourseService = async (courseData: Course) => {
     throw createHttpError(409, "Course already exists");
   }
 
-  return await createCourse({
+  return await CourseRepository.createCourse({
     course_title,
     course_description,
     course_code,
     publisher,
-    difficulty,
     required_subscription,
     published,
   });
 };
 
 export const fetchAllCoursesService = async () => {
-  return getAllCourse();
+  return CourseRepository.getAllCourse();
 };
 
 export const fetchCourseByIdService = async (courseId: string) => {
-  const course = await getCourseById(courseId);
+  const course = await CourseRepository.getCourseById(courseId);
   if (!course) {
     throw createHttpError(404, "Course not found");
   }
@@ -97,7 +86,7 @@ export const updateCourseService = async (
   ) {
     throw createHttpError(400, "Parameters missing");
   }
-  const course = await getCourseById(courseId);
+  const course = await CourseRepository.getCourseById(courseId);
   if (!course) {
     throw createHttpError(404, "Course not found");
   }
@@ -106,7 +95,7 @@ export const updateCourseService = async (
     throw createHttpError(403, "Unauthorized");
   }
   console.log(course.publisher + admin?.user_name);
-  return await updateCourse(courseId, {
+  return await CourseRepository.updateCourse(courseId, {
     course_title,
     course_description,
     course_code,
@@ -126,7 +115,7 @@ export const deleteCourseService = async (courseId: string, token: string) => {
     throw createHttpError(400, "Invalid course ID");
   }
 
-  const course = await getCourseById(courseId);
+  const course = await CourseRepository.getCourseById(courseId);
   if (!course) {
     throw createHttpError(404, "Course not found");
   }
@@ -134,21 +123,21 @@ export const deleteCourseService = async (courseId: string, token: string) => {
   if (course.publisher != admin?.user_name) {
     throw createHttpError(403, "Unauthorized");
   }
-  return deleteCourse(courseId);
+  return CourseRepository.deleteCourse(courseId);
 };
 
 export const publishCourseService = async (courseId: string, token: string) => {
   const admin = jwtDecode<User>(token);
-  const course = await getCourseById(courseId);
+  const course = await CourseRepository.getCourseById(courseId);
   if (!course) {
     throw createHttpError(404, "Course not found");
   }
   if (course.publisher != admin?.user_name) {
     throw createHttpError(403, "Unauthorized");
   }
-  return publishCourse(courseId);
+  return CourseRepository.publishCourse(courseId);
 };
 
 export const getPublishedCoursesService = async () => {
-  return getPublishedCourses();
+  return CourseRepository.getPublishedCourses();
 };
