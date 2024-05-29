@@ -1,4 +1,5 @@
 import CourseModel from "../models/course.model";
+import UserModel from "../models/user.model";
 import Course from "../interfaces/Course";
 
 export const findCourseByCodeOrTitle = async (
@@ -8,6 +9,10 @@ export const findCourseByCodeOrTitle = async (
   return await CourseModel.findOne({
     $or: [{ courseId }, { course_title }],
   });
+};
+
+export const findById = async (_id: string) => {
+  return await CourseModel.findOne({ _id });
 };
 
 export const createCourse = async (courseData: Course) => {
@@ -49,4 +54,17 @@ export const publishCourse = async (courseId: string) => {
 
 export const getPublishedCourses = async () => {
   return await CourseModel.find({ published: true });
+};
+
+export const getSubscribers = async (courseId: string) => {
+  const course = await CourseModel.findOne({ _id: courseId }).select(
+    "subscribers"
+  );
+  const userIds = course?.subscribers;
+  const subscribers = await UserModel.find({
+    _id: { $in: userIds },
+  });
+  console.log(subscribers);
+
+  return subscribers;
 };

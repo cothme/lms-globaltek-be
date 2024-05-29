@@ -11,6 +11,7 @@ router.get(
   requireAdminAuth,
   CourseController.getPublishedCourses
 );
+router.get("/subscribers/:courseId", CourseController.getSubscribers);
 router.get("/:courseId", CourseController.getCourse); //done
 router.patch("/:courseId", requireAdminAuth, CourseController.updateCourse); //done
 router.delete("/:courseId", requireAdminAuth, CourseController.deleteCourse);

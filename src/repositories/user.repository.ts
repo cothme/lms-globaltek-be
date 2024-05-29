@@ -38,7 +38,5 @@ export const getEnrolledCourses = async (userId: string) => {
 
   const courses = await CourseModel.find({ _id: { $in: courseIds } });
 
-  console.log(courses);
-
   return courses;
 };

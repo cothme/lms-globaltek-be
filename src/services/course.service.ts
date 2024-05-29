@@ -141,3 +141,12 @@ export const publishCourseService = async (courseId: string, token: string) => {
 export const getPublishedCoursesService = async () => {
   return CourseRepository.getPublishedCourses();
 };
+
+export const getSubscribersService = async (courseId: string) => {
+  const existingCourse = CourseRepository.findById(courseId);
+  if (!existingCourse) {
+    throw createHttpError(409, "Course not found");
+  }
+  const subscribers = await CourseRepository.getSubscribers(courseId);
+  return subscribers;
+};

@@ -120,3 +120,13 @@ export const getAllOwnedCourses: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getSubscribers: RequestHandler = async (req, res, next) => {
+  try {
+    const { courseId } = req.params;
+    const subscribers = await CourseService.getSubscribersService(courseId);
+    return res.status(200).json({ subscribers });
+  } catch (error) {
+    next(error);
+  }
+};
