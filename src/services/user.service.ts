@@ -93,3 +93,12 @@ export const deleteUserService = async (userId: string) => {
   const deletedUser = UserRepository.deleteUser(userId);
   return deletedUser;
 };
+
+export const viewEnrolledCoursesService = async (userId: string) => {
+  const existingUser = UserRepository.findById(userId);
+  if (!existingUser) {
+    throw createHttpError(409, "User not found");
+  }
+  const enrolledCourses = await UserRepository.viewEnrolledCourses(userId);
+  return enrolledCourses;
+};

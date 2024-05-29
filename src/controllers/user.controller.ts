@@ -2,8 +2,6 @@ import { RequestHandler } from "express";
 import createHttpError from "http-errors";
 import UserModel from "../models/user.model";
 import CourseModel from "../models/course.model";
-import bcrypt from "bcrypt";
-import mongoose from "mongoose";
 import multer from "multer";
 import { upload } from "../helpers/fileUpload";
 import { jwtDecode } from "jwt-decode";
@@ -130,12 +128,23 @@ export const enrollUser: RequestHandler = async (req, res, next) => {
     .json({ user: addCoursetoUser, course: addUsertoCourse });
 };
 
-export const deleteUser: RequestHandler = (req, res, next) => {
+export const deleteUser: RequestHandler = async (req, res, next) => {
   const { userId } = req.params;
   try {
     const deletedUser = UserService.deleteUserService(userId);
-    return res.status(200).json({ deleteUser });
+    return res.status(200).json({ deletedUser });
   } catch (error) {
     next(error);
   }
+};
+
+export const viewEnrolledCourses: RequestHandler = async (req, res, next) => {
+  const { userId } = req.params;
+  try {
+    const enrolledCoursesId = await UserService.viewEnrolledCoursesService(
+      userId
+    );
+
+    return res.status(200).json({ enrolledCoursesId });
+  } catch (error) {}
 };

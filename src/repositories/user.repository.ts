@@ -1,4 +1,5 @@
 import UserModel from "../models/user.model";
+import CourseModel from "../models/course.model";
 import User from "../interfaces/User";
 
 export const findByEmail = async (email: string) => {
@@ -26,4 +27,18 @@ export const updateUser = async (userId: string, userData: User) => {
 
 export const deleteUser = async (userId: string) => {
   return await UserModel.findOneAndDelete({ _id: userId });
+};
+
+export const viewEnrolledCourses = async (userId: string) => {
+  const user = await UserModel.findOne({ _id: userId }).select(
+    "courses_enrolled"
+  );
+
+  const courseIds = user?.courses_enrolled;
+
+  const courses = await CourseModel.find({ _id: { $in: courseIds } });
+
+  console.log(courses);
+
+  return courses;
 };
