@@ -5,6 +5,7 @@ export default interface User {
   user_name?: string;
   email?: string;
   subscription_tier?: string;
+  picture?: string;
   password?: string;
   isFromGoogle?: Boolean;
 }

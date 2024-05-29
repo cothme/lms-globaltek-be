@@ -27,6 +27,7 @@ const userSchema = new Schema(
     subscription_tier: {
       type: String,
       required: false,
+      default: "Free",
     },
     password: {
       type: String,

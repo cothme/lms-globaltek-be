@@ -14,6 +14,5 @@ router.get(
 );
 router.get("/:userId", requireAdminAuth, UserController.getUser);
 router.patch("/:userId", requireAdminAuth, UserController.updateuser);
-router.delete("/:userId", requireAdminAuth, UserController.deleteNote);
 
 export default router;
