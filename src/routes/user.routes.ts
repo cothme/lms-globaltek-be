@@ -8,12 +8,8 @@ const upload = multer({ dest: "uploads/" });
 const router = express.Router();
 // router.use(requireUserAuth);
 router.post("/upload", UserController.uploadFile);
-router.get("/", requireAdminAuth, UserController.getAllUser);
-router.get(
-  "/count/:numberOfUsers",
-  requireAdminAuth,
-  UserController.getNumberOfUsers
-);
+router.get("/", UserController.getAllUser);
+router.get("/count/:numberOfUsers", UserController.getNumberOfUsers);
 router.get("/courses/:userId", UserController.viewEnrolledCourses);
 router.post("/enroll/:courseId", UserController.enrollUser);
 router.get("/:userId", UserController.getUser);

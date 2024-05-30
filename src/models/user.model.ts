@@ -1,6 +1,8 @@
 import createHttpError from "http-errors";
-import { InferSchemaType, Model, model, Schema } from "mongoose";
+import mongoose, { InferSchemaType, Model, model, Schema } from "mongoose";
+import CourseModel from "../models/course.model";
 import bcrypt from "bcrypt";
+import user from "../interfaces/User";
 
 const userSchema = new Schema(
   {
@@ -52,7 +54,18 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
-
+userSchema.pre<user>("deleteOne", async function (next: any) {
+  const user = this._id;
+  try {
+    await CourseModel.updateMany(
+      { users: this._id },
+      { $pull: { users: this._id } }
+    );
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 type User = InferSchemaType<typeof userSchema>;
 
 export default model<User>("User", userSchema);

@@ -141,10 +141,10 @@ export const deleteUser: RequestHandler = async (req, res, next) => {
 export const viewEnrolledCourses: RequestHandler = async (req, res, next) => {
   const { userId } = req.params;
   try {
-    const enrolledCoursesId = await UserService.getEnrolledCoursesService(
+    const courses_enrolled = await UserService.getEnrolledCoursesService(
       userId
     );
 
-    return res.status(200).json({ enrolledCoursesId });
+    return res.status(200).json({ courses_enrolled: courses_enrolled });
   } catch (error) {}
 };

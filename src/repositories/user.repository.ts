@@ -26,7 +26,7 @@ export const updateUser = async (userId: string, userData: User) => {
 };
 
 export const deleteUser = async (userId: string) => {
-  return await UserModel.findOneAndDelete({ _id: userId });
+  return await UserModel.deleteOne({ _id: userId });
 };
 
 export const getEnrolledCourses = async (userId: string) => {

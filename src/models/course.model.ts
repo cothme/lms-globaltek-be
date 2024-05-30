@@ -1,4 +1,6 @@
 import { InferSchemaType, Model, model, Schema } from "mongoose";
+import course from "../interfaces/Course";
+import UserModel from "../models/user.model";
 
 const courseSchema = new Schema({
   course_title: {
@@ -46,7 +48,18 @@ const courseSchema = new Schema({
     required: false,
   },
 });
-
+courseSchema.pre<course>("deleteOne", async function (next: any) {
+  const user = this.courseId;
+  try {
+    await UserModel.updateMany(
+      { users: this.courseId },
+      { $pull: { users: this.courseId } }
+    );
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 type Course = InferSchemaType<typeof courseSchema>;
 
 export default model<Course>("Course", courseSchema);
