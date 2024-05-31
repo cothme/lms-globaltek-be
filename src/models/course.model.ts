@@ -60,6 +60,19 @@ courseSchema.pre<course>("deleteOne", async function (next: any) {
     next(err);
   }
 });
+courseSchema.pre<course>("deleteOne", async function (next: any) {
+  const user = this.courseId;
+  try {
+    await UserModel.updateMany(
+      { courses_enrolled: this.courseId },
+      { $pull: { users: this.courseId } }
+    );
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 type Course = InferSchemaType<typeof courseSchema>;
 
 export default model<Course>("Course", courseSchema);
