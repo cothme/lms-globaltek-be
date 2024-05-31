@@ -109,23 +109,45 @@ export const updateuser: RequestHandler = async (req, res, next) => {
 };
 
 export const enrollUser: RequestHandler = async (req, res, next) => {
-  const { courseId } = req.params;
-  const token = String(req.headers.authorization);
-  const user = jwtDecode(token) as User;
-  const userId = user._id;
+  try {
+    const { courseId } = req.params;
+    const token = req.headers.authorization?.split(" ")[1];
 
-  const addCoursetoUser = await UserModel.updateOne(
-    { _id: userId },
-    { $addToSet: { courses_enrolled: courseId } }
-  );
-  const addUsertoCourse = await CourseModel.updateOne(
-    { _id: courseId },
-    { $addToSet: { subscribers: userId } }
-  );
+    if (!token) {
+      return res.status(401).json({ error: "Unauthorized: No token provided" });
+    }
 
-  return res
-    .status(200)
-    .json({ user: addCoursetoUser, course: addUsertoCourse });
+    const user = jwtDecode(token) as User;
+    const userId = user._id;
+
+    // Adding the course to the user's enrolled courses
+    const addCoursetoUser = await UserModel.updateOne(
+      { _id: userId },
+      { $addToSet: { courses_enrolled: courseId } }
+    );
+
+    // Adding the user to the course's subscribers
+    const addUsertoCourse = await CourseModel.updateOne(
+      { _id: courseId },
+      { $addToSet: { subscribers: userId } }
+    );
+
+    if (
+      addCoursetoUser.modifiedCount === 0 ||
+      addUsertoCourse.modifiedCount === 0
+    ) {
+      return res.status(400).json({ error: "User already enrolled" });
+    }
+
+    return res.status(200).json({
+      message: "Enrollment successful",
+      user: addCoursetoUser,
+      course: addUsertoCourse,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 export const deleteUser: RequestHandler = async (req, res, next) => {

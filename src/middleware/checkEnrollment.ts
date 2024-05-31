@@ -1,45 +1,39 @@
-import createHttpError from "http-errors";
+import { RequestHandler } from "express";
+import { jwtDecode } from "jwt-decode";
 import mongoose from "mongoose";
-import { RequestHandler, response } from "express";
-import UserModel from "../models/user.model";
-import AdminModel from "../models/admin.model";
-import bcrypt from "bcrypt";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import dotenv from "dotenv";
-import express, { Express, NextFunction, Request, Response } from "express";
-import User from "../interfaces/User";
+import CourseModel from "../models/course.model";
+import Course from "../interfaces/Course";
 
-const SECRET = String(process.env.SECRET);
-
-const isUserValid = (token: string, res: express.Response) => {
+export const checkEnrollment: RequestHandler = async (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, SECRET) as JwtPayload;
-    if (decoded) {
-      const manage = decoded;
-      console.log("User: ", manage.email);
-      return decoded;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ error: "Unauthorized: No token provided" });
     }
-  } catch (e: any) {
-    console.log(e.message);
-    return res.status(401).send({
-      error: "Invalid Token. Sign In again",
-      errorCode: "INVALID_TOKEN",
-    });
-  }
-};
 
-const isCourseEnrolled = async (user: User, res: express.Response) => {
-  const matchedUser = await UserModel.findOne({ email: user.email });
-  if (!matchedUser) {
-    return res.status(401).send({
-      message: "Access Denied!",
-    });
-  }
-};
+    const decoded = jwtDecode<Course>(token);
+    const userId = decoded.courseId;
+    const { courseId } = req.params;
 
-const checkEnrollment: RequestHandler = (req, res, next) => {
-  const { authorization } = req.headers;
-  if (!authorization) {
-    return res.status(401).json({ error: "You are not authorized!" });
+    const course = await CourseModel.findById(courseId)
+      .select("subscribers")
+      .lean();
+
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+    const isEnrolled = course.subscribers.some(
+      (subscriberId: mongoose.Types.ObjectId) =>
+        subscriberId.equals(userObjectId)
+    );
+    (req as any).isEnrolled = isEnrolled;
+
+    next();
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };

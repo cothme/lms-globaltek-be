@@ -42,6 +42,39 @@ export const getCourse: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const checkEnrollment: RequestHandler = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ error: "Unauthorized: No token provided" });
+    }
+
+    const decoded = jwtDecode<{ _id: string }>(token);
+    const userId = decoded._id;
+    const { courseId } = req.params;
+
+    const course = await CourseModel.findById(courseId)
+      .select("subscribers")
+      .lean();
+
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+    const isEnrolled = course.subscribers.some(
+      (subscriberId: mongoose.Types.ObjectId) =>
+        subscriberId.equals(userObjectId)
+    );
+
+    return res.status(200).json({ enrolled: isEnrolled });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 //GET ALL PUBLISHED
 export const getPublishedCourses: RequestHandler = async (req, res, next) => {
   try {

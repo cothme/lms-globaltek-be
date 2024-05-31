@@ -68,3 +68,14 @@ export const getSubscribers = async (courseId: string) => {
 
   return subscribers;
 };
+
+export const removeUserFromCouse = async (userId: string, courseId: string) => {
+  const removeUserFromCouse = await UserModel.updateMany(
+    { courses_enrolled: courseId },
+    { $pull: { users: courseId } }
+  );
+  const removeCourseFromUser = await CourseModel.updateMany(
+    { users: userId },
+    { $pull: { users: userId } }
+  );
+};
