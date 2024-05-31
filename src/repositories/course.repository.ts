@@ -69,13 +69,28 @@ export const getSubscribers = async (courseId: string) => {
   return subscribers;
 };
 
-export const removeUserFromCouse = async (userId: string, courseId: string) => {
-  const removeUserFromCouse = await UserModel.updateMany(
-    { courses_enrolled: courseId },
-    { $pull: { users: courseId } }
-  );
-  const removeCourseFromUser = await CourseModel.updateMany(
-    { users: userId },
-    { $pull: { users: userId } }
-  );
+export const removeUserFromCourse = async (
+  userId: string,
+  courseId: string
+) => {
+  try {
+    // Remove course from user
+    await UserModel.updateMany(
+      { courses_enrolled: courseId },
+      { $pull: { courses_enrolled: courseId } }
+    );
+
+    // Remove user from course
+    await CourseModel.updateOne(
+      { _id: courseId },
+      { $pull: { users: userId } }
+    );
+
+    // Optionally, you might want to handle errors or return something indicating success
+    return { success: true, message: "User removed from course successfully" };
+  } catch (error) {
+    // Handle error
+    console.error("Error removing user from course:", error);
+    return { success: false, message: "Failed to remove user from course" };
+  }
 };

@@ -7,6 +7,7 @@ import Course from "../interfaces/Course";
 import User from "../interfaces/User";
 import * as CourseService from "../services/course.service";
 import { publishCourse } from "../repositories/course.repository";
+import UserModel from "../models/user.model";
 
 //CREATE
 export const createCourse: RequestHandler = async (req, res, next) => {
@@ -161,5 +162,27 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     return res.status(200).json({ subscribers });
   } catch (error) {
     next(error);
+  }
+};
+
+export const removeUserFromCourse: RequestHandler = async (req, res, next) => {
+  const { userId } = req.params;
+  const courseId = req.body;
+
+  try {
+    await UserModel.updateOne(
+      { courses_enrolled: courseId },
+      { $pull: { courses_enrolled: courseId } }
+    );
+
+    await CourseModel.updateOne(
+      { _id: courseId },
+      { $pull: { subscribers: userId } }
+    );
+
+    return { success: true, message: "User removed from course successfully" };
+  } catch (error) {
+    console.error("Error removing user from course:", error);
+    return { success: false, message: "Failed to remove user from course" };
   }
 };
