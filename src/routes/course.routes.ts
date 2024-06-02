@@ -6,8 +6,7 @@ const router = express.Router();
 
 router.get("/", CourseController.getAllCourses); //done
 router.post("/", requireAdminAuth, CourseController.createCourse); //done
-router.get("/published/", CourseController.getPublishedCourses); //no middleware
-router.post("/deleteUser/:userId", CourseController.removeUserFromCourse);
+router.post("/remove/:userId", CourseController.removeUserFromCourse);
 router.get("/checkEnroll/:courseId", CourseController.checkEnrollment);
 router.get("/subscribers/:courseId", CourseController.getSubscribers);
 router.get("/:courseId", CourseController.getCourse); //no middleware

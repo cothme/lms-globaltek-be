@@ -77,16 +77,6 @@ export const checkEnrollment: RequestHandler = async (req, res, next) => {
 	}
 };
 
-//GET ALL PUBLISHED
-export const getPublishedCourses: RequestHandler = async (req, res, next) => {
-	try {
-		const publishedCourses = await CourseService.getPublishedCoursesService();
-		return res.status(200).json({ publishedCourses: publishedCourses });
-	} catch (error) {
-		next(error);
-	}
-};
-
 //PUBLISH
 export const togglePublish: RequestHandler = async (req, res, next) => {
 	const token = String(req.headers.authorization);
@@ -168,22 +158,52 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
 
 export const removeUserFromCourse: RequestHandler = async (req, res, next) => {
 	const { userId } = req.params;
-	const courseId = req.body;
+	const { courseId } = req.body;
+
+	if (!courseId) {
+		return res
+			.status(400)
+			.json({ success: false, message: "Course ID is required" });
+	}
 
 	try {
-		await UserModel.updateOne(
-			{ courses_enrolled: courseId },
+		const courseToRemove = await CourseModel.findById(courseId);
+		if (!courseToRemove) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Course not found" });
+		}
+
+		const userUpdateResult = await UserModel.updateOne(
+			{ _id: userId },
 			{ $pull: { courses_enrolled: courseId } }
 		);
 
-		await CourseModel.updateOne(
+		if (userUpdateResult.modifiedCount === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "User not found or not enrolled in course",
+			});
+		}
+
+		const courseUpdateResult = await CourseModel.updateOne(
 			{ _id: courseId },
 			{ $pull: { subscribers: userId } }
 		);
 
-		return { success: true, message: "User removed from course successfully" };
+		if (courseUpdateResult.modifiedCount === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "Course not found or user not subscribed",
+			});
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "User removed from course successfully",
+		});
 	} catch (error) {
 		console.error("Error removing user from course:", error);
-		return { success: false, message: "Failed to remove user from course" };
+		next(error);
 	}
 };
