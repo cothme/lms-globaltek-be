@@ -39,7 +39,7 @@ export const createUserService = async (userData: User, c_password: string) => {
 	return { newUser };
 };
 
-export const getAllUserService = async (query: object) => {
+export const getAllUserService = async (query: User) => {
 	const users = UserRepository.getAllUser(query);
 	if (!users) {
 		throw createHttpError(409, "No Users!");
