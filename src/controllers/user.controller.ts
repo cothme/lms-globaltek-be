@@ -9,164 +9,165 @@ import User from "../interfaces/User";
 import * as UserService from "../services/user.service";
 
 export const uploadFile: RequestHandler = (req, res, next) => {
-  upload.single("file")(req, res, (err) => {
-    if (err) {
-      return next(err);
-    }
+	upload.single("file")(req, res, (err) => {
+		if (err) {
+			return next(err);
+		}
 
-    if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
-    }
+		if (!req.file) {
+			return res.status(400).json({ error: "No file uploaded" });
+		}
 
-    return res.status(200).json({ file: req.file });
-  });
+		return res.status(200).json({ file: req.file });
+	});
 };
 export const signup: RequestHandler = async (req, res, next) => {
-  const {
-    given_name,
-    family_name,
-    user_name,
-    email,
-    password,
-    c_password,
-    picture,
-  } = req.body;
+	const {
+		given_name,
+		family_name,
+		user_name,
+		email,
+		password,
+		c_password,
+		picture,
+	} = req.body;
 
-  try {
-    const newUser = await UserService.createUserService(
-      {
-        given_name,
-        family_name,
-        user_name,
-        email,
-        password,
-        picture,
-      },
-      c_password
-    );
-    res.status(201).json(newUser);
-  } catch (error) {
-    next(error);
-  }
+	try {
+		const newUser = await UserService.createUserService(
+			{
+				given_name,
+				family_name,
+				user_name,
+				email,
+				password,
+				picture,
+			},
+			c_password
+		);
+		res.status(201).json(newUser);
+	} catch (error) {
+		next(error);
+	}
 };
 
 export const getUser: RequestHandler = async (req, res, next) => {
-  const { userId } = req.params;
-  try {
-    const note = await UserModel.findOne({ _id: userId });
-    if (!note) {
-      throw createHttpError(404, "User not found");
-    }
-    return res.status(200).json(note);
-  } catch (error) {
-    next(error);
-  }
+	const { userId } = req.params;
+	try {
+		const note = await UserModel.findOne({ _id: userId });
+		if (!note) {
+			throw createHttpError(404, "User not found");
+		}
+		return res.status(200).json(note);
+	} catch (error) {
+		next(error);
+	}
 };
 
 export const getNumberOfUsers: RequestHandler = async (req, res, next) => {
-  try {
-    const { numberOfUsers } = req.params;
-    const limit = parseInt(numberOfUsers);
-    const users = await UserModel.find().sort({ createdAt: -1 }).limit(limit);
-    if (!users) {
-      throw createHttpError(404, "User not found");
-    }
-    return res.status(200).json({
-      user: users,
-      userCount: users.length,
-    });
-  } catch (error) {
-    next(error);
-  }
+	try {
+		const { numberOfUsers } = req.params;
+		const limit = parseInt(numberOfUsers);
+		const users = await UserModel.find().sort({ createdAt: -1 }).limit(limit);
+		if (!users) {
+			throw createHttpError(404, "User not found");
+		}
+		return res.status(200).json({
+			user: users,
+			userCount: users.length,
+		});
+	} catch (error) {
+		next(error);
+	}
 };
 
 export const getAllUser: RequestHandler = async (req, res, next) => {
-  try {
-    const users = await UserService.getAllUserService();
-    return res.status(200).json({
-      users: users,
-      userCount: users.length,
-    });
-  } catch (error) {
-    next(error);
-  }
+	try {
+		const query = req.query;
+		const users = await UserService.getAllUserService(query);
+		return res.status(200).json({
+			users: users,
+			userCount: users.length,
+		});
+	} catch (error) {
+		next(error);
+	}
 };
 
 export const updateuser: RequestHandler = async (req, res, next) => {
-  try {
-    const { userId } = req.params;
-    const { given_name, family_name, email, user_name, password, picture } =
-      req.body;
+	try {
+		const { userId } = req.params;
+		const { given_name, family_name, email, user_name, password, picture } =
+			req.body;
 
-    const userUpdated = await UserService.updateUserService(
-      { given_name, family_name, email, user_name, password, picture },
-      userId
-    );
-    return res.status(200).json(userUpdated);
-  } catch (error) {
-    next(error);
-  }
+		const userUpdated = await UserService.updateUserService(
+			{ given_name, family_name, email, user_name, password, picture },
+			userId
+		);
+		return res.status(200).json(userUpdated);
+	} catch (error) {
+		next(error);
+	}
 };
 
 export const enrollUser: RequestHandler = async (req, res, next) => {
-  try {
-    const { courseId } = req.params;
-    const token = req.headers.authorization?.split(" ")[1];
+	try {
+		const { courseId } = req.params;
+		const token = req.headers.authorization?.split(" ")[1];
 
-    if (!token) {
-      return res.status(401).json({ error: "Unauthorized: No token provided" });
-    }
+		if (!token) {
+			return res.status(401).json({ error: "Unauthorized: No token provided" });
+		}
 
-    const user = jwtDecode(token) as User;
-    const userId = user._id;
+		const user = jwtDecode(token) as User;
+		const userId = user._id;
 
-    // Adding the course to the user's enrolled courses
-    const addCoursetoUser = await UserModel.updateOne(
-      { _id: userId },
-      { $addToSet: { courses_enrolled: courseId } }
-    );
+		// Adding the course to the user's enrolled courses
+		const addCoursetoUser = await UserModel.updateOne(
+			{ _id: userId },
+			{ $addToSet: { courses_enrolled: courseId } }
+		);
 
-    // Adding the user to the course's subscribers
-    const addUsertoCourse = await CourseModel.updateOne(
-      { _id: courseId },
-      { $addToSet: { subscribers: userId } }
-    );
+		// Adding the user to the course's subscribers
+		const addUsertoCourse = await CourseModel.updateOne(
+			{ _id: courseId },
+			{ $addToSet: { subscribers: userId } }
+		);
 
-    if (
-      addCoursetoUser.modifiedCount === 0 ||
-      addUsertoCourse.modifiedCount === 0
-    ) {
-      return res.status(400).json({ error: "User already enrolled" });
-    }
+		if (
+			addCoursetoUser.modifiedCount === 0 ||
+			addUsertoCourse.modifiedCount === 0
+		) {
+			return res.status(400).json({ error: "User already enrolled" });
+		}
 
-    return res.status(200).json({
-      message: "Enrollment successful",
-      user: addCoursetoUser,
-      course: addUsertoCourse,
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal server error" });
-  }
+		return res.status(200).json({
+			message: "Enrollment successful",
+			user: addCoursetoUser,
+			course: addUsertoCourse,
+		});
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ error: "Internal server error" });
+	}
 };
 
 export const deleteUser: RequestHandler = async (req, res, next) => {
-  const { userId } = req.params;
-  try {
-    const deletedUser = UserService.deleteUserService(userId);
-    return res.status(200).json({ deletedUser });
-  } catch (error) {
-    next(error);
-  }
+	const { userId } = req.params;
+	try {
+		const deletedUser = UserService.deleteUserService(userId);
+		return res.status(200).json({ deletedUser });
+	} catch (error) {
+		next(error);
+	}
 };
 
 export const viewEnrolledCourses: RequestHandler = async (req, res, next) => {
-  const { userId } = req.params;
-  try {
-    const courses_enrolled = await UserService.getEnrolledCoursesService(
-      userId
-    );
+	const { userId } = req.params;
+	try {
+		const courses_enrolled = await UserService.getEnrolledCoursesService(
+			userId
+		);
 
-    return res.status(200).json({ courses_enrolled: courses_enrolled });
-  } catch (error) {}
+		return res.status(200).json({ courses_enrolled: courses_enrolled });
+	} catch (error) {}
 };
