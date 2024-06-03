@@ -17,5 +17,6 @@ router.post("/enroll/:courseId", UserController.enrollUser);
 router.get("/:userId", UserController.getUser);
 router.patch("/:userId", requireAuth, UserController.updateuser);
 router.delete("/:userId", requireAuth, UserController.deleteUser);
+router.post("/unenroll/:courseId", UserController.unenrollUser);
 
 export default router;
