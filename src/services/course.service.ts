@@ -10,23 +10,17 @@ export const createNewCourseService = async (courseData: Course) => {
     course_title,
     course_description,
     course_code,
-    publisher,
     required_subscription,
-    published,
   } = courseData;
 
-  if (
-    ![
-      course_title,
-      course_code,
-      course_description,
-      required_subscription,
-    ].every(Boolean)
-  ) {
-    throw createHttpError(400, "Missing fields!");
-  }
-  if (!course_title) {
-    throw createHttpError(400, "Course must have a title");
+  const missingFields = [];
+  if (!course_title) missingFields.push("Course Title");
+  if (!course_description) missingFields.push("Course Description");
+  if (!course_code) missingFields.push("Course Code");
+  if (!required_subscription) missingFields.push("Subscription ");
+
+  if (missingFields.length > 0) {
+    throw createHttpError(400, `Missing fields: ${missingFields.join(", ")}`);
   }
 
   const existingCourse = await CourseRepository.findCourseByCodeOrTitle(
@@ -37,14 +31,7 @@ export const createNewCourseService = async (courseData: Course) => {
     throw createHttpError(409, "Course already exists");
   }
 
-  return await CourseRepository.createCourse({
-    course_title,
-    course_description,
-    course_code,
-    publisher,
-    required_subscription,
-    published,
-  });
+  return await CourseRepository.createCourse(courseData);
 };
 
 export const getAllCourseService = async (query: Course) => {
@@ -76,29 +63,31 @@ export const updateCourseService = async (
     required_subscription,
     published,
   } = courseData;
-  const admin = jwtDecode<User>(authHeader);
+
+  const missingFields = [];
+  if (!course_title) missingFields.push("course_title");
+  if (!course_description) missingFields.push("course_description");
+  if (!course_code) missingFields.push("course_code");
+  if (!required_subscription) missingFields.push("required_subscription");
+
+  if (missingFields.length > 0) {
+    throw createHttpError(400, `Missing fields: ${missingFields.join(", ")}`);
+  }
+
   if (!mongoose.isValidObjectId(courseId)) {
     throw createHttpError(500, "Invalid Course ID");
   }
-  if (
-    ![
-      course_title,
-      course_description,
-      course_code,
-      required_subscription,
-    ].every(Boolean)
-  ) {
-    throw createHttpError(400, "Parameters missing");
-  }
+
   const course = await CourseRepository.getCourseById(courseId);
   if (!course) {
     throw createHttpError(404, "Course not found");
   }
 
-  if (course.publisher != admin?.user_name) {
+  const admin = jwtDecode<User>(authHeader);
+  if (course.publisher !== admin?.user_name) {
     throw createHttpError(403, "Unauthorized");
   }
-  console.log(course.publisher + admin?.user_name);
+
   return await CourseRepository.updateCourse(courseId, {
     course_title,
     course_description,
