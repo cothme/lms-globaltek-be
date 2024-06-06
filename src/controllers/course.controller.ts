@@ -150,8 +150,12 @@ export const getAllOwnedCourses: RequestHandler = async (req, res, next) => {
 
 export const getSubscribers: RequestHandler = async (req, res, next) => {
   try {
+    const token = String(req.headers.authorization?.split(" ")[1]);
     const { courseId } = req.params;
-    const subscribers = await CourseService.getSubscribersService(courseId);
+    const subscribers = await CourseService.getSubscribersService(
+      token,
+      courseId
+    );
     return res.status(200).json({ subscribers });
   } catch (error) {
     next(error);
