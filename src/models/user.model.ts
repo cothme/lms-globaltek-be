@@ -18,13 +18,11 @@ const userSchema = new Schema(
       type: String,
       required: true,
       unique: true,
-      select: true,
     },
     email: {
       type: String,
       required: true,
       unique: true,
-      select: true,
     },
     subscription_tier: {
       type: String,
