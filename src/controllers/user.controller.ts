@@ -191,9 +191,10 @@ export const unenrollUser: RequestHandler = async (req, res, next) => {
 export const deleteUser: RequestHandler = async (req, res, next) => {
   const { userId } = req.params;
   try {
-    const deletedUser = UserService.deleteUserService(userId);
+    const deletedUser = await UserService.deleteUserService(userId);
     return res.status(200).json({ deletedUser });
   } catch (error) {
+    console.error("Error in deleteUser handler:", error);
     next(error);
   }
 };

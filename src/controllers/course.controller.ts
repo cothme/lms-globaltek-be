@@ -209,3 +209,18 @@ export const removeUserFromCourse: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getPublishedCourse: RequestHandler = async (req, res, next) => {
+  try {
+    const { courseId } = req.params;
+    const course = await CourseService.fetchCourseByIdService(courseId);
+
+    if (!course.published) {
+      return res.status(403).json({ error: "Course not published" });
+    }
+
+    return res.status(200).json({ course });
+  } catch (error) {
+    next(error);
+  }
+};

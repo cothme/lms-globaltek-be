@@ -1,5 +1,6 @@
 import express from "express";
 import * as UserController from "../controllers/user.controller";
+import { getPublishedCourse } from "../controllers/course.controller";
 import { requireUserAuth } from "../middleware/requireUserAuth";
 import { requireAdminAuth } from "../middleware/requireAdminAuth";
 import multer from "multer";
@@ -18,5 +19,6 @@ router.get("/:userId", UserController.getUser);
 router.patch("/:userId", requireAuth, UserController.updateuser);
 router.delete("/:userId", requireAuth, UserController.deleteUser);
 router.post("/unenroll/:courseId", UserController.unenrollUser);
+router.get("/published/:courseId", getPublishedCourse);
 
 export default router;

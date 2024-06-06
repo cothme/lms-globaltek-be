@@ -45,5 +45,14 @@ export const requireAuth: RequestHandler = (req, res, next) => {
   }
 
   const token = authorization.replace("Bearer ", "");
-  console.log("has header activeAdmin: ", res.headersSent);
+
+  try {
+    const decoded = jwt.verify(token, String(process.env.SECRET));
+    req.user = decoded;
+    console.log("User authenticated:", req.user);
+    next();
+  } catch (error) {
+    console.error("Authentication error:", error);
+    return res.status(401).json({ error: "Invalid token" });
+  }
 };
