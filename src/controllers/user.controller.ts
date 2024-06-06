@@ -118,8 +118,19 @@ export const enrollUser: RequestHandler = async (req, res, next) => {
       return res.status(401).json({ error: "Unauthorized: No token provided" });
     }
 
-    const user = jwtDecode(token) as User;
-    const userId = user._id;
+    const userDecode = jwtDecode(token) as User;
+    const userId = userDecode._id;
+    const course = await CourseModel.findById(courseId);
+    const user = (await UserModel.findById(userId)) as User;
+
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+    if (course.required_subscription != user.subscription_tier) {
+      console.log(course.required_subscription, user.subscription_tier);
+
+      return res.status(400).json({ error: "Subscribe to Premium" });
+    }
 
     const addCoursetoUser = await UserModel.updateOne(
       { _id: userId },
