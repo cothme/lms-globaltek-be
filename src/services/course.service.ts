@@ -47,7 +47,7 @@ export const getAllCourseService = async (
   );
 
   if (!courses || courses.length === 0) {
-    throw createHttpError(409, "No Courses!");
+    throw createHttpError(404, "No Courses!");
   }
 
   const totalItems = await CourseModel.countDocuments(query);
