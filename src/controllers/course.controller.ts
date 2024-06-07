@@ -23,11 +23,17 @@ export const createCourse: RequestHandler = async (req, res, next) => {
 //GET ALL
 export const getAllCourses: RequestHandler = async (req, res, next) => {
   try {
-    const query = req.query;
-    const courses = await CourseService.getAllCourseService(query);
-    return res
-      .status(200)
-      .json({ courses: courses, courseCount: courses.length });
+    const { page = 1, limit = 10, ...query } = req.query;
+    const parsedPage = parseInt(page as string, 10);
+    const parsedLimit = parseInt(limit as string, 10);
+
+    const courses = await CourseService.getAllCourseService(
+      query,
+      parsedPage,
+      parsedLimit
+    );
+
+    return res.status(200).json(courses);
   } catch (error) {
     next(error);
   }

@@ -19,8 +19,20 @@ export const createCourse = async (courseData: Course) => {
   return await CourseModel.create(courseData);
 };
 
-export const getAllCourse = async (query: Course) => {
-  return await CourseModel.find(query).sort({ createdAt: -1 });
+export const getAllCourse = async (
+  query: Course,
+  page: number,
+  limit: number
+) => {
+  const allCourses = await CourseModel.find();
+  const offset = (page - 1) * limit;
+
+  const courses = await CourseModel.find(query)
+    .sort({ createdAt: -1 })
+    .skip(offset)
+    .limit(limit);
+
+  return { courses, allCourses: allCourses.length };
 };
 
 export const getCourseById = async (courseId: string) => {

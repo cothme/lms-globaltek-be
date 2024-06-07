@@ -4,6 +4,7 @@ import Course from "../interfaces/Course";
 import { jwtDecode } from "jwt-decode";
 import mongoose from "mongoose";
 import User from "../interfaces/User";
+import CourseModel from "../models/course.model";
 
 export const createNewCourseService = async (courseData: Course) => {
   const {
@@ -34,15 +35,41 @@ export const createNewCourseService = async (courseData: Course) => {
   return await CourseRepository.createCourse(courseData);
 };
 
-export const getAllCourseService = async (query: Course) => {
-  const courses = CourseRepository.getAllCourse(query);
-  if (!courses) {
+export const getAllCourseService = async (
+  query: Course,
+  page?: number,
+  limit?: number
+) => {
+  const { courses, allCourses } = await CourseRepository.getAllCourse(
+    query,
+    page!,
+    limit!
+  );
+
+  if (!courses || courses.length === 0) {
     throw createHttpError(409, "No Courses!");
   }
-  return courses;
+
+  const totalItems = await CourseModel.countDocuments(query);
+  const totalPages = Math.ceil(totalItems / limit!);
+
+  return {
+    courses,
+    pagination: {
+      totalItems,
+      totalPages,
+      currentPage: page,
+      pageSize: limit,
+    },
+    courseCount: allCourses,
+  };
 };
 
-export const fetchCourseByIdService = async (courseId: string) => {
+export const fetchCourseByIdService = async (
+  courseId: string,
+  page?: number,
+  limit?: number
+) => {
   const course = await CourseRepository.getCourseById(courseId);
   if (!course) {
     throw createHttpError(404, "Course not found");
