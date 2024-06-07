@@ -3,27 +3,40 @@ import createHttpError from "http-errors";
 import mongoose from "mongoose";
 import User from "../interfaces/User";
 import bcrypt from "bcrypt";
-
 export const createUserService = async (userData: User, c_password: string) => {
-  const { given_name, family_name, user_name, email, picture, password } =
+  const { given_name, family_name, user_name, email, password, picture } =
     userData;
+
+  const missingFields = [];
+  if (!given_name) missingFields.push("given_name");
+  if (!family_name) missingFields.push("family_name");
+  if (!email) missingFields.push("email");
+  if (!user_name) missingFields.push("user_name");
+  if (!password) missingFields.push("password");
+
+  if (missingFields.length > 0) {
+    throw createHttpError(
+      400,
+      `Parameters missing: ${missingFields.join(", ")}`
+    );
+  }
 
   if (password !== c_password) {
     throw createHttpError(422, "Password does not match!");
   }
-  const existingEmail = await UserRepository.findByEmail(String(email));
+
+  const [existingEmail, existingUsername] = await Promise.all([
+    UserRepository.findByEmail(String(email)),
+    UserRepository.findByUsername(String(user_name)),
+  ]);
+
   if (existingEmail) {
     throw createHttpError(409, "Email already taken");
   }
-  if (!given_name || !family_name || !email || !user_name || !password) {
-    throw createHttpError(400, "Parameters missing");
-  }
-  const existingUsername = await UserRepository.findByUsername(
-    String(user_name)
-  );
   if (existingUsername) {
     throw createHttpError(409, "Username already taken");
   }
+
   const passwordHashed = await bcrypt.hash(password, 10);
 
   const newUser = await UserRepository.createUser({

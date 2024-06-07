@@ -34,10 +34,16 @@ interface SignUpGoogle {
 
 export const login: RequestHandler = async (req, res, next) => {
   const { email, password } = req.body;
+  const missingFields = [];
+  if (!email) missingFields.push("email");
+  if (!password) missingFields.push("password");
 
   try {
-    if (!email || !password) {
-      throw createHttpError(422, "Missing fields!");
+    if (missingFields.length > 0) {
+      throw createHttpError(
+        400,
+        `Parameters missing: ${missingFields.join(", ")}`
+      );
     }
     const user = await UserModel.findOne({ email: email });
     if (user) {
