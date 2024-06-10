@@ -8,7 +8,7 @@ router.get("/", CourseController.getAllCourses); //done
 router.post("/", requireAdminAuth, CourseController.createCourse); //done
 router.get("/checkEnroll/:courseId", CourseController.checkEnrollment);
 router.get(
-  "/subscribers/:courseId",
+  "/subscribers/:courseName",
   requireAdminAuth,
   CourseController.getSubscribers
 );

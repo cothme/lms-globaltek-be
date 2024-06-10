@@ -170,12 +170,12 @@ export const getPublishedCoursesService = async () => {
 
 export const getSubscribersService = async (
   token: string,
-  courseId: string
+  courseName: string
 ) => {
-  const existingCourse = CourseRepository.findById(courseId);
+  const existingCourse = CourseRepository.findCourseByCodeOrTitle(courseName);
   const admin = jwtDecode<User>(token);
-  const course = await CourseRepository.getCourseById(courseId);
-  console.log((course?.publisher ?? "") + admin?.user_name);
+  const course = await CourseRepository.getCourseByName(courseName);
+  console.log((course?.course_title ?? "") + admin?.user_name);
 
   if (course?.publisher != admin?.user_name) {
     throw createHttpError(403, "Unauthorized");
@@ -183,6 +183,6 @@ export const getSubscribersService = async (
   if (!existingCourse) {
     throw createHttpError(409, "Course not found");
   }
-  const subscribers = await CourseRepository.getSubscribers(courseId);
+  const subscribers = await CourseRepository.getSubscribers(courseName);
   return subscribers;
 };

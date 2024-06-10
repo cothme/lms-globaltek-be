@@ -71,8 +71,8 @@ export const getPublishedCourses = async () => {
   return await CourseModel.find({ published: true });
 };
 
-export const getSubscribers = async (courseId: string) => {
-  const course = await CourseModel.findOne({ _id: courseId }).select(
+export const getSubscribers = async (courseName: string) => {
+  const course = await CourseModel.findOne({ course_title: courseName }).select(
     "subscribers"
   );
   const userIds = course?.subscribers;
