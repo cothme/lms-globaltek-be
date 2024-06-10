@@ -12,6 +12,7 @@ dotenv.config();
 interface userDetails {
   given_name?: string;
   family_name?: string;
+  user_name?: string;
   email?: string;
   password?: string;
   isFromGoogle?: Boolean;
@@ -96,6 +97,7 @@ export const loginGoogle: RequestHandler<
         return res.status(200).json({
           id: user.id,
           family_name: user.family_name,
+          user_name: user.user_name,
           given_name: user.given_name,
           email: user.email,
           jwt: token,

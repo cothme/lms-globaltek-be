@@ -51,9 +51,9 @@ export const signup: RequestHandler = async (req, res, next) => {
 };
 
 export const getUser: RequestHandler = async (req, res, next) => {
-  const { userId } = req.params;
+  const { userName } = req.params;
   try {
-    const note = await UserModel.findOne({ _id: userId });
+    const note = await UserModel.findOne({ user_name: userName });
     if (!note) {
       throw createHttpError(404, "User not found");
     }
@@ -211,10 +211,12 @@ export const deleteUser: RequestHandler = async (req, res, next) => {
 };
 
 export const viewEnrolledCourses: RequestHandler = async (req, res, next) => {
-  const { userId } = req.params;
+  const { userName } = req.params;
   try {
+    console.log(userName);
+
     const courses_enrolled = await UserService.getEnrolledCoursesService(
-      userId
+      userName
     );
 
     return res.status(200).json({ courses_enrolled: courses_enrolled });

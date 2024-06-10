@@ -110,11 +110,11 @@ export const deleteUserService = async (userId: string) => {
   return deletedUser;
 };
 
-export const getEnrolledCoursesService = async (userId: string) => {
-  const existingUser = UserRepository.findById(userId);
+export const getEnrolledCoursesService = async (userName: string) => {
+  const existingUser = UserRepository.findByUsername(userName);
   if (!existingUser) {
     throw createHttpError(409, "User not found");
   }
-  const enrolledCourses = await UserRepository.getEnrolledCourses(userId);
+  const enrolledCourses = await UserRepository.getEnrolledCourses(userName);
   return enrolledCourses;
 };

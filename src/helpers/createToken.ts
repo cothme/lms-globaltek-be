@@ -1,16 +1,7 @@
 import jwt from "jsonwebtoken";
+import User from "../interfaces/User";
 
-interface SignUpBody {
-  _id?: string;
-  family_name?: string;
-  given_name?: string;
-  user_name?: string;
-  email?: string;
-  password?: string;
-  c_password?: string;
-  isFromGoogle?: Boolean;
-}
-export const createToken = (user: SignUpBody) => {
+export const createToken = (user: User) => {
   return jwt.sign(
     {
       _id: user._id,
