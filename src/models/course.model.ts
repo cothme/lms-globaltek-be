@@ -40,7 +40,8 @@ const courseSchema = new Schema(
     ],
     topics: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "Topic",
       },
     ],
     announcement: [

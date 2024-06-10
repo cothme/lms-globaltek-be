@@ -44,7 +44,7 @@ const userSchema = new Schema(
     courses_enrolled: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Courses",
+        ref: "Course",
       },
     ],
   },
