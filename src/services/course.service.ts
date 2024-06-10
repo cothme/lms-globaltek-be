@@ -77,10 +77,18 @@ export const fetchCourseByIdService = async (
   return course;
 };
 
+export const fetchCourseByCourseNameService = async (courseName: string) => {
+  const course = await CourseRepository.getCourseByName(courseName);
+  if (!course) {
+    throw createHttpError(404, "Course not found");
+  }
+  return course;
+};
+
 export const updateCourseService = async (
   courseData: Course,
   token: string,
-  courseId: string
+  courseName: string
 ) => {
   const authHeader = token;
   const {
@@ -101,12 +109,10 @@ export const updateCourseService = async (
     throw createHttpError(400, `Missing fields: ${missingFields.join(", ")}`);
   }
 
-  if (!mongoose.isValidObjectId(courseId)) {
-    throw createHttpError(500, "Invalid Course ID");
-  }
-
-  const course = await CourseRepository.getCourseById(courseId);
+  const course = await CourseRepository.getCourseByName(courseName);
   if (!course) {
+    console.log(courseName);
+
     throw createHttpError(404, "Course not found");
   }
 
@@ -115,7 +121,7 @@ export const updateCourseService = async (
     throw createHttpError(403, "Unauthorized");
   }
 
-  return await CourseRepository.updateCourse(courseId, {
+  return await CourseRepository.updateCourse(courseName, {
     course_title,
     course_description,
     course_code,

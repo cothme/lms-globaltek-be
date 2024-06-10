@@ -38,9 +38,12 @@ export const getAllCourse = async (
 export const getCourseById = async (courseId: string) => {
   return await CourseModel.findOne({ _id: courseId });
 };
+export const getCourseByName = async (courseName: string) => {
+  return await CourseModel.findOne({ course_title: courseName });
+};
 
-export const updateCourse = async (courseId: string, courseData: Course) => {
-  return await CourseModel.updateOne({ _id: courseId }, courseData);
+export const updateCourse = async (courseName: string, courseData: Course) => {
+  return await CourseModel.updateOne({ course_title: courseName }, courseData);
 };
 
 export const deleteCourse = async (courseId: string) => {

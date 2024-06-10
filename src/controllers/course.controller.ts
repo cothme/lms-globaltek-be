@@ -42,8 +42,10 @@ export const getAllCourses: RequestHandler = async (req, res, next) => {
 //GET ONE
 export const getCourse: RequestHandler = async (req, res, next) => {
   try {
-    const { courseId } = req.params;
-    const course = await CourseService.fetchCourseByIdService(courseId);
+    const { courseName } = req.params;
+    const course = await CourseService.fetchCourseByCourseNameService(
+      courseName
+    );
     return res
       .status(200)
       .json({ course, subscriber: course.subscribers.length });
@@ -104,12 +106,12 @@ export const togglePublish: RequestHandler = async (req, res, next) => {
 export const updateCourse: RequestHandler = async (req, res, next) => {
   const token = String(req.headers.authorization);
   const courseData: Course = req.body;
-  const { courseId } = req.params;
+  const { courseName } = req.params;
   try {
     const updatedCourse = await CourseService.updateCourseService(
       courseData,
       token,
-      courseId
+      courseName
     );
     return res.status(200).json({ updatedCourse });
   } catch (error) {

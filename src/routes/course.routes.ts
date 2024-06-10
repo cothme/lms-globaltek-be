@@ -12,8 +12,8 @@ router.get(
   requireAdminAuth,
   CourseController.getSubscribers
 );
-router.get("/:courseId", CourseController.getCourse); //no middleware
-router.patch("/:courseId", requireAdminAuth, CourseController.updateCourse); //done
+router.get("/:courseName", CourseController.getCourse); //no middleware
+router.patch("/:courseName", requireAdminAuth, CourseController.updateCourse); //done
 router.delete("/:courseId", requireAdminAuth, CourseController.deleteCourse);
 router.patch(
   "/publish/:courseId",
