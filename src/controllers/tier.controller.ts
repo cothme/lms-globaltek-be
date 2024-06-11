@@ -1,8 +1,6 @@
 import { RequestHandler } from "express";
-import mongoose, { isValidObjectId } from "mongoose";
 import * as TierService from "../services/tier.service";
 import Tier from "../interfaces/Tier";
-import e from "cors";
 
 export const createTier: RequestHandler = async (req, res, next) => {
   const tierData: Tier = req.body;
