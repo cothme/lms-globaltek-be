@@ -129,7 +129,9 @@ export const enrollUser: RequestHandler = async (req, res, next) => {
     if (course.required_subscription != user.subscription_tier) {
       console.log(course.required_subscription, user.subscription_tier);
 
-      return res.status(400).json({ error: "Subscribe to Premium" });
+      return res
+        .status(400)
+        .json({ error: "Upgrade your subscription poor shit" });
     }
 
     const addCoursetoUser = await UserModel.updateOne(

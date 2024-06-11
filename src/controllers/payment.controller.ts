@@ -19,7 +19,7 @@ export const makePayment: RequestHandler = async (req, res, next) => {
           product_data: {
             name: "T-shirt",
           },
-          unit_amount: 2000,
+          unit_amount: 4000,
         },
         quantity: 1,
       },
