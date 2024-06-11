@@ -49,7 +49,7 @@ export const requireAuth: RequestHandler = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, String(process.env.SECRET));
     req.user = decoded;
-    console.log("User authenticated:", req.user);
+    // console.log("User authenticated:", req.user);
     next();
   } catch (error) {
     console.error("Authentication error:", error);
