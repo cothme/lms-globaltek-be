@@ -52,18 +52,7 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
-userSchema.pre<user>("deleteOne", async function (next: any) {
-  const user = this._id;
-  try {
-    await CourseModel.updateMany(
-      { users: this._id },
-      { $pull: { users: this._id } }
-    );
-    next();
-  } catch (err) {
-    next(err);
-  }
-});
+
 type User = InferSchemaType<typeof userSchema>;
 
 export default model<User>("User", userSchema);

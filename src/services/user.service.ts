@@ -102,12 +102,32 @@ export const updateUserService = async (userData: User, userId: string) => {
 };
 
 export const deleteUserService = async (userId: string) => {
-  const existingUser = await UserRepository.findById(userId);
-  if (!existingUser) {
-    throw createHttpError(409, "User not found");
+  try {
+    const existingUser = await UserRepository.findById(userId);
+    if (!existingUser) {
+      throw createHttpError(409, "User not found");
+    }
+
+    const deletedUser = await UserRepository.deleteUser(userId);
+    const deleteUserInCourses = await UserRepository.deleteUserFromCourse(
+      userId
+    );
+
+    return {
+      success: true,
+      message: "User successfully deleted from system and courses.",
+      data: {
+        deletedUser,
+        deleteUserInCourses,
+      },
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: "An error occurred while deleting the user.",
+      error: error.message,
+    };
   }
-  const deletedUser = await UserRepository.deleteUser(userId);
-  return deletedUser;
 };
 
 export const getEnrolledCoursesService = async (userName: string) => {

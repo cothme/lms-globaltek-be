@@ -30,6 +30,10 @@ export const deleteUser = async (userId: string) => {
   return await UserModel.deleteOne({ _id: userId });
 };
 
+export const deleteUserFromCourse = async (userId: string) => {
+  return await CourseModel.updateMany({ $pull: { subscribers: userId } });
+};
+
 export const getEnrolledCourses = async (userName: string) => {
   const user = await UserModel.findOne({ user_name: userName }).select(
     "courses_enrolled"

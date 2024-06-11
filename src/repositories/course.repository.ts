@@ -50,6 +50,10 @@ export const deleteCourse = async (courseId: string) => {
   return await CourseModel.deleteOne({ _id: courseId });
 };
 
+export const deleteCourseFromUser = async (courseId: string) => {
+  return await UserModel.updateMany({ $pull: { courses_enrolled: courseId } });
+};
+
 export const publishCourse = async (courseId: string) => {
   const course = await getCourseById(courseId);
   const courseStatus = course?.published;

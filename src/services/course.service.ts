@@ -129,25 +129,44 @@ export const updateCourseService = async (
 };
 
 export const deleteCourseService = async (courseId: string, token: string) => {
-  const admin = jwtDecode<User>(token);
-  const authHeader = admin;
-  if (!authHeader) {
-    throw createHttpError(401, "Authorization header is missing");
-  }
+  try {
+    const admin = jwtDecode<User>(token);
+    const authHeader = admin;
+    if (!authHeader) {
+      throw createHttpError(401, "Authorization header is missing");
+    }
 
-  if (!mongoose.isValidObjectId(courseId)) {
-    throw createHttpError(400, "Invalid course ID");
-  }
+    if (!mongoose.isValidObjectId(courseId)) {
+      throw createHttpError(400, "Invalid course ID");
+    }
 
-  const course = await CourseRepository.getCourseById(courseId);
-  if (!course) {
-    throw createHttpError(404, "Course not found");
-  }
+    const course = await CourseRepository.getCourseById(courseId);
+    if (!course) {
+      throw createHttpError(404, "Course not found");
+    }
 
-  if (course.publisher != admin?.user_name) {
-    throw createHttpError(403, "Unauthorized");
+    if (course.publisher != admin?.user_name) {
+      throw createHttpError(403, "Unauthorized");
+    }
+    const deleteCourse = await CourseRepository.deleteCourse(courseId);
+    const deleteUserFromCourse = await CourseRepository.deleteCourseFromUser(
+      courseId
+    );
+    return {
+      success: true,
+      message: "User successfully deleted from system and courses.",
+      data: {
+        deleteCourse,
+        deleteUserFromCourse,
+      },
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: "An error occurred while deleting the user.",
+      error: error.message,
+    };
   }
-  return CourseRepository.deleteCourse(courseId);
 };
 
 export const publishCourseService = async (courseId: string, token: string) => {
