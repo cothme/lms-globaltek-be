@@ -88,23 +88,31 @@ export const removeUserFromCourse = async (
   courseId: string
 ) => {
   try {
-    // Remove course from user
     await UserModel.updateMany(
       { courses_enrolled: courseId },
       { $pull: { courses_enrolled: courseId } }
     );
 
-    // Remove user from course
     await CourseModel.updateOne(
       { _id: courseId },
       { $pull: { users: userId } }
     );
-
-    // Optionally, you might want to handle errors or return something indicating success
     return { success: true, message: "User removed from course successfully" };
   } catch (error) {
-    // Handle error
     console.error("Error removing user from course:", error);
     return { success: false, message: "Failed to remove user from course" };
+  }
+};
+
+export const addTopicToCourse = async (courseId: string, topicId: string) => {
+  try {
+    await CourseModel.updateOne(
+      { _id: courseId },
+      { $push: { topics: topicId } }
+    );
+    return { success: true, message: "Topic added to course successfully" };
+  } catch (error) {
+    console.error("Error adding topic to course:", error);
+    return { success: false, message: "Failed to add topic to course" };
   }
 };
