@@ -8,6 +8,7 @@ import courseRouter from "./routes/course.routes";
 import adminRouter from "./routes/admin.routes";
 import paymentRouter from "./routes/payment.route";
 import tierRouter from "./routes/tier.routes";
+import topicRouter from "./routes/topic.routes";
 
 import express, { Express, NextFunction, Request, Response } from "express";
 import createHttpError, { isHttpError } from "http-errors";
@@ -24,6 +25,7 @@ app.use("/api/course", courseRouter);
 app.use("/api/admin/", adminRouter);
 app.use("/api/payment/", paymentRouter);
 app.use("/api/tier/", tierRouter);
+app.use("/api/topic/", topicRouter);
 
 app.use((req, res, next) => {
   next(createHttpError(404, "Endpoint not found"));
