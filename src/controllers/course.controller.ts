@@ -131,6 +131,9 @@ export const deleteCourse: RequestHandler = async (req, res, next) => {
       courseId,
       authHeader
     );
+    if (deletedCourse.error === "Unauthorized")
+      return res.status(403).json({ error: "Unauthorized" });
+
     return res.status(200).json({ deletedCourse });
   } catch (error) {
     next(error);
