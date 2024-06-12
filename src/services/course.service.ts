@@ -24,9 +24,9 @@ export const createNewCourseService = async (courseData: Course) => {
     throw createHttpError(400, `Missing fields: ${missingFields.join(", ")}`);
   }
 
-  const existingCourse = await CourseRepository.findCourseByCodeOrTitle(
-    String(course_code)
-  );
+  const existingCourse = await CourseRepository.findCourse(courseData);
+  console.log(existingCourse);
+
   if (existingCourse) {
     throw createHttpError(409, "Course already exists");
   }

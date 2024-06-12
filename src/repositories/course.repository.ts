@@ -2,10 +2,17 @@ import CourseModel from "../models/course.model";
 import UserModel from "../models/user.model";
 import Course from "../interfaces/Course";
 
-export const findCourseByCodeOrTitle = async (identifier: string) => {
+export const findCourseByCodeOrTitle = async (
+  courseId?: string,
+  courseName?: string
+) => {
   return await CourseModel.findOne({
-    $or: [{ courseId: identifier }, { course_title: identifier }],
+    $or: [{ courseId }, { course_title: courseName }],
   });
+};
+
+export const findCourse = async (courseData: Course) => {
+  return await CourseModel.find(courseData);
 };
 
 export const findById = async (_id: string) => {
