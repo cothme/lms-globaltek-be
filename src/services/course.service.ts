@@ -25,8 +25,7 @@ export const createNewCourseService = async (courseData: Course) => {
   }
 
   const existingCourse = await CourseRepository.findCourseByCodeOrTitle(
-    course_code,
-    course_title
+    String(course_code)
   );
   if (existingCourse) {
     throw createHttpError(409, "Course already exists");
@@ -201,4 +200,14 @@ export const getSubscribersService = async (
   }
   const subscribers = await CourseRepository.getSubscribers(courseName);
   return subscribers;
+};
+
+export const removeUserFromCourseService = async (
+  userId: string,
+  courseId: string
+) => {
+  if (!courseId) {
+    return { success: false, message: "Course not found" };
+  }
+  return await CourseRepository.removeUserFromCourse(userId, courseId);
 };

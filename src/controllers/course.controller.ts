@@ -6,7 +6,10 @@ import { jwtDecode } from "jwt-decode";
 import Course from "../interfaces/Course";
 import User from "../interfaces/User";
 import * as CourseService from "../services/course.service";
-import { publishCourse } from "../repositories/course.repository";
+import {
+  publishCourse,
+  findCourseByCodeOrTitle,
+} from "../repositories/course.repository";
 import UserModel from "../models/user.model";
 
 //CREATE
@@ -173,52 +176,26 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
 
 export const removeUserFromCourse: RequestHandler = async (req, res, next) => {
   const { userId } = req.params;
-  const { courseId } = req.body;
+  const { courseName } = req.body;
 
-  if (!courseId) {
+  if (!courseName) {
     return res
       .status(400)
-      .json({ success: false, message: "Course ID is required" });
+      .json({ success: false, message: "Course Name is required" });
   }
 
   try {
-    const courseToRemove = await CourseModel.findById(courseId);
-    if (!courseToRemove) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Course not found" });
-    }
-
-    const userUpdateResult = await UserModel.updateOne(
-      { _id: userId },
-      { $pull: { courses_enrolled: courseId } }
+    const result = await CourseService.removeUserFromCourseService(
+      userId,
+      courseName
     );
-
-    if (userUpdateResult.modifiedCount === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found or not enrolled in course",
-      });
+    if (result.success) {
+      res.status(200).json(result);
+    } else {
+      res.status(500).json(result);
     }
-
-    const courseUpdateResult = await CourseModel.updateOne(
-      { _id: courseId },
-      { $pull: { subscribers: userId } }
-    );
-
-    if (courseUpdateResult.modifiedCount === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Course not found or user not subscribed",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "User removed from course successfully",
-    });
   } catch (error) {
-    console.error("Error removing user from course:", error);
+    console.error("Error handling removeUserFromCourse request:", error);
     next(error);
   }
 };

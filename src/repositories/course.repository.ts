@@ -2,12 +2,9 @@ import CourseModel from "../models/course.model";
 import UserModel from "../models/user.model";
 import Course from "../interfaces/Course";
 
-export const findCourseByCodeOrTitle = async (
-  courseId?: string,
-  course_title?: string
-) => {
+export const findCourseByCodeOrTitle = async (identifier: string) => {
   return await CourseModel.findOne({
-    $or: [{ courseId }, { course_title }],
+    $or: [{ courseId: identifier }, { course_title: identifier }],
   });
 };
 
@@ -89,18 +86,20 @@ export const getSubscribers = async (courseName: string) => {
 
 export const removeUserFromCourse = async (
   userId: string,
-  courseId: string
+  courseName: string
 ) => {
   try {
+    const courseId = (await getCourseByName(courseName))?._id;
     await UserModel.updateMany(
-      { courses_enrolled: courseId },
+      { _id: userId },
       { $pull: { courses_enrolled: courseId } }
     );
 
     await CourseModel.updateOne(
       { _id: courseId },
-      { $pull: { users: userId } }
+      { $pull: { subscribers: userId } }
     );
+
     return { success: true, message: "User removed from course successfully" };
   } catch (error) {
     console.error("Error removing user from course:", error);
