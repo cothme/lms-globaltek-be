@@ -15,6 +15,14 @@ export const findCourse = async (courseData: Course) => {
   return await CourseModel.find(courseData);
 };
 
+export const findCourseByTitle = async (courseName: string) => {
+  return await CourseModel.findOne({ course_title: courseName });
+};
+
+export const findCourseByCode = async (courseCode: string) => {
+  return await CourseModel.findOne({ course_code: courseCode });
+};
+
 export const findById = async (_id: string) => {
   return await CourseModel.findOne({ _id });
 };
