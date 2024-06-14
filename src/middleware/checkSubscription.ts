@@ -14,7 +14,10 @@ export const checkSubscription: RequestHandler = async (req, res, next) => {
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
     }
-    if (user.subscription_tier !== course.required_subscription) {
+    if (
+      user.subscription_tier !== course.required_subscription &&
+      course.required_subscription !== "Free"
+    ) {
       return res.status(403).json({ error: "Upgrade your subscription" });
     }
     return res.status(200).json({

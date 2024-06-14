@@ -6,11 +6,6 @@ import { jwtDecode } from "jwt-decode";
 import Course from "../interfaces/Course";
 import User from "../interfaces/User";
 import * as CourseService from "../services/course.service";
-import {
-  publishCourse,
-  findCourseByCodeOrTitle,
-} from "../repositories/course.repository";
-import UserModel from "../models/user.model";
 
 //CREATE
 export const createCourse: RequestHandler = async (req, res, next) => {
@@ -212,7 +207,32 @@ export const getPublishedCourse: RequestHandler = async (req, res, next) => {
       return res.status(403).json({ error: "Course not published" });
     }
 
-    return res.status(200).json({ course });
+    return res.status(200).json({
+      courses: {
+        course_code: course.course_code,
+        required_subscription: course.required_subscription,
+        course_title: course.course_title,
+        course_name: course.course_title,
+        publisher: course.publisher,
+        course_description: course.course_description,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getCourseContent: RequestHandler = async (req, res, next) => {
+  const { courseId } = req.params;
+
+  try {
+    const course = await CourseService.fetchCourseByIdService(courseId);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+    return res.status(200).json({
+      course,
+    });
   } catch (error) {
     next(error);
   }

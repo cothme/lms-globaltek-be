@@ -1,11 +1,11 @@
 import express from "express";
 import * as UserController from "../controllers/user.controller";
 import { getPublishedCourse } from "../controllers/course.controller";
-import { requireUserAuth } from "../middleware/requireUserAuth";
-import { requireAdminAuth } from "../middleware/requireAdminAuth";
 import multer from "multer";
 import { requireAuth } from "../middleware/requireAuth";
-import { checkEnrollment } from "../controllers/course.controller";
+import { checkSubscription } from "../middleware/checkSubscription";
+import { checkEnrollment } from "../middleware/checkEnrollment";
+import * as CourseController from "../controllers/course.controller";
 
 const upload = multer({ dest: "uploads/" });
 const router = express.Router();
@@ -20,5 +20,10 @@ router.patch("/:userId", requireAuth, UserController.updateuser);
 router.delete("/:userId", requireAuth, UserController.deleteUser);
 router.post("/unenroll/:courseId", UserController.unenrollUser);
 router.get("/published/:courseId", getPublishedCourse);
+router.get(
+  "/content/:courseId",
+  [checkSubscription, requireAuth, checkEnrollment],
+  CourseController.getCourseContent
+);
 
 export default router;

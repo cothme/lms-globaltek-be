@@ -12,11 +12,14 @@ import topicRouter from "./routes/topic.routes";
 
 import express, { Express, NextFunction, Request, Response } from "express";
 import createHttpError, { isHttpError } from "http-errors";
+import { handleStripeWebhook } from "./controllers/payment.controller";
 
 const app: Express = express();
 
 app.use(cors());
 app.use(express.static("uploads"));
+app.use("/api/payment/webhook", express.raw({ type: "application/json" }));
+app.post("/api/payment/webhook", handleStripeWebhook);
 app.use(express.json());
 
 app.use("/api/user", userRouter);

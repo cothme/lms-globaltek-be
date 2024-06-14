@@ -126,12 +126,13 @@ export const enrollUser: RequestHandler = async (req, res, next) => {
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
     }
-    if (course.required_subscription != user.subscription_tier) {
+    if (
+      course.required_subscription != user.subscription_tier &&
+      course.required_subscription != "Free"
+    ) {
       console.log(course.required_subscription, user.subscription_tier);
 
-      return res
-        .status(400)
-        .json({ error: "Upgrade your subscription poor shit" });
+      return res.status(400).json({ error: "Upgrade your subscription" });
     }
 
     const addCoursetoUser = await UserModel.updateOne(
