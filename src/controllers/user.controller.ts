@@ -7,6 +7,8 @@ import { upload } from "../helpers/fileUpload";
 import { jwtDecode } from "jwt-decode";
 import User from "../interfaces/User";
 import * as UserService from "../services/user.service";
+import Stripe from "stripe";
+const stripe = new Stripe(process.env.STRIPE_SECRET as string, {});
 
 export const uploadFile: RequestHandler = (req, res, next) => {
   upload.single("file")(req, res, (err) => {
@@ -36,6 +38,7 @@ export const signup: RequestHandler = async (req, res, next) => {
     const newUser = await UserService.createUserService(
       {
         given_name,
+
         family_name,
         user_name,
         email,

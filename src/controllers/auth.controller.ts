@@ -6,9 +6,11 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { createToken } from "../helpers/createToken";
+import Stripe from "stripe";
 
 dotenv.config();
 
+const stripe = new Stripe(process.env.STRIPE_SECRET as string, {});
 interface userDetails {
   given_name?: string;
   family_name?: string;
@@ -82,10 +84,15 @@ export const loginGoogle: RequestHandler<
   try {
     const user = await UserModel.findOne({ email: email });
     if (!user) {
+      const customer = await stripe.customers.create({
+        email: email,
+        name: `${given_name} ${family_name}`,
+      });
       const userCreated = await UserModel.create({
         given_name: given_name,
         family_name: family_name,
         user_name: user_name,
+        stripe_customer_id: customer.id,
         email: email,
         isFromGoogle: true,
       });

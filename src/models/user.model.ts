@@ -10,6 +10,10 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    stripe_customer_id: {
+      type: String,
+      required: false,
+    },
     family_name: {
       type: String,
       required: false,

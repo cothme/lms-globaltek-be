@@ -3,9 +3,17 @@ import createHttpError from "http-errors";
 import mongoose from "mongoose";
 import User from "../interfaces/User";
 import bcrypt from "bcrypt";
+import { stripe } from "../stripe";
 export const createUserService = async (userData: User, c_password: string) => {
-  const { given_name, family_name, user_name, email, password, picture } =
-    userData;
+  const {
+    given_name,
+    family_name,
+    user_name,
+    email,
+    password,
+    picture,
+    stripe_customer_id,
+  } = userData;
 
   const missingFields = [];
   if (!given_name) missingFields.push("given_name");
@@ -38,7 +46,11 @@ export const createUserService = async (userData: User, c_password: string) => {
   }
 
   const passwordHashed = await bcrypt.hash(password, 10);
-
+  const customer = await stripe.customers.create({
+    email: email,
+    name: `${given_name} ${family_name}`,
+  });
+  console.log(`Stripe customer created with ID: ${customer.id}`);
   const newUser = await UserRepository.createUser({
     given_name,
     family_name,
@@ -47,6 +59,7 @@ export const createUserService = async (userData: User, c_password: string) => {
     password: passwordHashed,
     isFromGoogle: false,
     picture,
+    stripe_customer_id: customer.id,
   });
 
   return { newUser };

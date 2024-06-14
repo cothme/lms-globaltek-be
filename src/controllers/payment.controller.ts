@@ -1,15 +1,15 @@
 import { RequestHandler } from "express";
 import createHttpError from "http-errors";
-import Stripe from "stripe";
+import { stripe } from "../stripe";
 import dotenv from "dotenv";
 import * as TierRepository from "../repositories/tier.repository";
 import * as UserRepository from "../repositories/user.repository";
 import { jwtDecode } from "jwt-decode";
 import { Document } from "mongoose";
+import Stripe from "stripe";
+import UserModel from "../models/user.model";
 
 dotenv.config();
-
-const stripe = new Stripe(String(process.env.STRIPE_SECRET));
 
 export const makePayment: RequestHandler = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -24,29 +24,17 @@ export const makePayment: RequestHandler = async (req, res, next) => {
 
   try {
     // Check if the user exists in your system
-    const user = (await UserRepository.findById(userId)) as Document & {
-      stripeCustomerId?: string;
-    };
+    const user = await UserRepository.findById(userId);
+
     if (!user) {
       return next(createHttpError(404, "User not found"));
     }
 
-    let customerStripeId = user.stripeCustomerId;
-    if (!customerStripeId) {
-      const customer = await stripe.customers.create({
-        metadata: {
-          _id: userId,
-        },
-      });
-      customerStripeId = customer.id;
-
-      user.stripeCustomerId = customerStripeId;
-      await user.save();
-    }
+    const customerStripeId = user.stripe_customer_id;
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      customer: customerStripeId,
+      customer: customerStripeId!,
       mode: "payment",
       line_items: [
         {
@@ -111,7 +99,32 @@ export const handleStripeWebhook: RequestHandler = async (req, res, next) => {
           console.error(`Failed to update user subscription: ${err.message}`);
         }
         break;
+      case "customer.created":
+        const customer = event.data.object;
+        console.log(`Customer created: ${customer.id}`);
+        try {
+          console.log(
+            `Attempting to find and update user with email: ${customer.email}`
+          );
 
+          const user = await UserModel.findOneAndUpdate(
+            { email: customer.email },
+            { customerStripeId: customer.id },
+            { new: true }
+          );
+
+          if (user) {
+            console.log(
+              `Updated user ${user._id} with customerStripeId: ${customer.id}`
+            );
+          } else {
+            console.log(`User with email ${customer.email} not found.`);
+          }
+        } catch (error: any) {
+          console.error(`Error updating user: ${error.message}`);
+        }
+
+        break;
       // Handle other event types as needed
 
       default:
