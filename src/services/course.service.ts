@@ -15,14 +15,21 @@ export const createNewCourseService = async (courseData: Course) => {
   } = courseData;
 
   const missingFields = [];
-  if (!course_title || course_title.includes(""))
-    missingFields.push("Course Title");
-  if (!course_description || course_description.includes(""))
-    missingFields.push("Course Description");
-  if (!course_code || course_code.includes(""))
+  if (!course_title) missingFields.push("Course Title");
+  if (!course_description) missingFields.push("Course Description");
+  if (!course_code || course_code.includes(" "))
     missingFields.push("Course Code");
-  if (!required_subscription || required_subscription.includes(""))
-    missingFields.push("Subscription ");
+  if (!required_subscription) missingFields.push("Subscription ");
+
+  if (/\s/.test(String(course_title)[0])) {
+    missingFields.push("Course Title");
+  }
+  if (/\s/.test(String(course_description)[0])) {
+    missingFields.push("Course Description");
+  }
+  if (/\s/.test(String(course_code)[0])) {
+    missingFields.push("Course Code");
+  }
 
   if (missingFields.length > 0) {
     throw createHttpError(400, `Missing fields: ${missingFields.join(", ")}`);
@@ -38,7 +45,7 @@ export const createNewCourseService = async (courseData: Course) => {
   if (existingCourseByTitle || existingCourseByCode) {
     throw createHttpError(409, "Course already exists");
   }
-
+  courseData;
   return await CourseRepository.createCourse(courseData);
 };
 
