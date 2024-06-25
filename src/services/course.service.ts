@@ -105,18 +105,12 @@ export const updateCourseService = async (
   courseName: string
 ) => {
   const authHeader = token;
-  const {
-    course_title,
-    course_description,
-    course_code,
-    required_subscription,
-    published,
-  } = courseData;
+  const { course_title, course_description, required_subscription, published } =
+    courseData;
 
   const missingFields = [];
   if (!course_title) missingFields.push("course_title");
   if (!course_description) missingFields.push("course_description");
-  if (!course_code) missingFields.push("course_code");
   if (!required_subscription) missingFields.push("required_subscription");
 
   if (missingFields.length > 0) {
@@ -136,7 +130,6 @@ export const updateCourseService = async (
   return await CourseRepository.updateCourse(courseName, {
     course_title,
     course_description,
-    course_code,
     required_subscription,
     published,
   });
