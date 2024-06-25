@@ -59,6 +59,7 @@ export const login: RequestHandler = async (req, res, next) => {
           user_name: user.user_name,
           given_name: user.given_name,
           email: user.email,
+          subscription_tier: user.subscription_tier,
           jwt: token,
         });
       }
@@ -80,6 +81,7 @@ export const loginGoogle: RequestHandler<
   const family_name = req.body.family_name;
   const user_name = req.body.name;
   const email = req.body.email;
+  const subscription_tier = "free";
 
   try {
     const user = await UserModel.findOne({ email: email });
@@ -93,6 +95,7 @@ export const loginGoogle: RequestHandler<
         family_name: family_name,
         user_name: user_name,
         stripe_customer_id: customer.id,
+        subscription_tier: subscription_tier,
         email: email,
         isFromGoogle: true,
       });
@@ -107,6 +110,7 @@ export const loginGoogle: RequestHandler<
           user_name: user.user_name,
           given_name: user.given_name,
           email: user.email,
+          subscription_tier: user.subscription_tier,
           jwt: token,
         });
       }

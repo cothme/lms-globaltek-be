@@ -9,6 +9,7 @@ export const createToken = (user: User) => {
       user_name: user.user_name,
       family_name: user.family_name,
       email: user.email,
+      subscription_tier: user.subscription_tier,
     },
     String(process.env.SECRET),
     {

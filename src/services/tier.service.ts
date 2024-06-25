@@ -40,6 +40,9 @@ export const updateTierService = async (tierId: string, tierData: Tier) => {
     throw createHttpError(400, "Tier ID is required");
   }
   const existingTier = await TierRepository.findById(tierId);
+  if (existingTier?.tier_title === "Free") {
+    throw createHttpError(400, "Cannot update free tier");
+  }
   if (!existingTier) {
     throw createHttpError(404, "Tier not found");
   }

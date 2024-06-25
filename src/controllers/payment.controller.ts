@@ -25,7 +25,11 @@ export const makePayment: RequestHandler = async (req, res, next) => {
   try {
     // Check if the user exists in your system
     const user = await UserRepository.findById(userId);
-
+    if (user?.subscription_tier === tier.tier_title) {
+      return next(
+        createHttpError(400, "User is already subscribed to this tier")
+      );
+    }
     if (!user) {
       return next(createHttpError(404, "User not found"));
     }
@@ -57,9 +61,9 @@ export const makePayment: RequestHandler = async (req, res, next) => {
     });
 
     return res.json({ url: session.url });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to create payment session:", error);
-    return next(createHttpError(500, "Failed to create payment session"));
+    return next(createHttpError(500, error));
   }
 };
 
@@ -137,3 +141,6 @@ export const handleStripeWebhook: RequestHandler = async (req, res, next) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 };
+function useState<T>(arg0: string): [any, any] {
+  throw new Error("Function not implemented.");
+}
