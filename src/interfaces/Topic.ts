@@ -3,4 +3,6 @@ export default interface Topic {
   parent_course?: string;
   topic_title?: string;
   topic_description?: string;
+  pdf?: string;
+  video?: string;
 }

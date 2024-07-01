@@ -2,10 +2,16 @@ import { RequestHandler } from "express";
 import Topic from "../interfaces/Topic";
 import * as TopicService from "../services/topic.service";
 import { addTopicToCourse } from "../repositories/course.repository";
+import * as CourseRepository from "../repositories/course.repository";
 
 export const createTopic: RequestHandler = async (req, res, next) => {
   const { courseId } = req.params;
   const topicData: Topic = req.body;
+  const parentCourse = CourseRepository.getCourseById(courseId);
+  if (!parentCourse) {
+    return res.status(404).json({ message: "Course not found" });
+  }
+  topicData.parent_course = courseId;
   try {
     const newTopic = await TopicService.createNewTopicService(topicData);
     const newTopictoCourse = await addTopicToCourse(

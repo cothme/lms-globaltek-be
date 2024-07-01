@@ -6,7 +6,7 @@ import createHttpError from "http-errors";
 
 export const createNewTopicService = async (topicData: Topic) => {
   const { topic_title, topic_description, parent_course } = topicData;
-
+  if (!parent_course) throw createHttpError(400, "Parent Course is required");
   const missingFields = [];
   if (!topic_title) missingFields.push("Topic Title");
   if (!topic_description) missingFields.push("Topic Description");

@@ -16,7 +16,7 @@ router.get("/count/:numberOfUsers", UserController.getNumberOfUsers);
 router.get("/courses/:userName", UserController.viewEnrolledCourses);
 router.post("/enroll/:courseId", UserController.enrollUser);
 router.get("/:userName", UserController.getUser);
-router.patch("/:userId", requireAuth, UserController.updateuser);
+router.patch("/:userId", [requireAuth], UserController.updateuser);
 router.delete("/:userId", requireAuth, UserController.deleteUser);
 router.post("/unenroll/:courseId", UserController.unenrollUser);
 router.get("/published/:courseId", getPublishedCourse);

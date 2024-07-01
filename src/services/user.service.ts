@@ -103,13 +103,15 @@ export const updateUserService = async (userData: User, userId: string) => {
     }
   }
 
-  const userUpdated = await UserRepository.updateUser(userId, {
+  const updatedUserData = {
     given_name,
     family_name,
     user_name,
     email,
-    picture,
-  });
+    ...(picture && { picture }), // Only include picture if it's provided
+  };
+
+  const userUpdated = await UserRepository.updateUser(userId, updatedUserData);
 
   return userUpdated;
 };

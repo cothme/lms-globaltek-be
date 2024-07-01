@@ -9,6 +9,8 @@ import User from "../interfaces/User";
 import * as UserService from "../services/user.service";
 import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET as string, {});
+import fs from "fs";
+import path from "path";
 
 export const uploadFile: RequestHandler = (req, res, next) => {
   upload.single("file")(req, res, (err) => {
@@ -96,20 +98,43 @@ export const getAllUser: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const updateuser: RequestHandler = async (req, res, next) => {
-  try {
-    const { userId } = req.params;
-    const { given_name, family_name, email, user_name, password, picture } =
-      req.body;
+export const updateuser: RequestHandler = (req, res, next) => {
+  upload.single("picture")(req, res, async (err) => {
+    if (err) {
+      return next(createHttpError(400, err));
+    }
 
-    const userUpdated = await UserService.updateUserService(
-      { given_name, family_name, email, user_name, password, picture },
-      userId
-    );
-    return res.status(200).json(userUpdated);
-  } catch (error) {
-    next(error);
-  }
+    try {
+      const { userId } = req.params;
+      const { given_name, family_name, email, user_name, password } = req.body;
+      const picture = req.file ? req.file.filename : undefined;
+
+      // Fetch the existing user to get the current picture path
+      const existingUser = await UserModel.findById(userId);
+      if (!existingUser) {
+        throw createHttpError(404, "User not found");
+      }
+
+      // Delete the old picture if a new one is uploaded
+      if (picture && existingUser.picture) {
+        fs.unlink(
+          path.join(__dirname, "../../uploads", existingUser.picture),
+          (err) => {
+            if (err) console.log("Failed to delete old picture:", err);
+          }
+        );
+      }
+
+      const userUpdated = await UserService.updateUserService(
+        { given_name, family_name, email, user_name, password, picture },
+        userId
+      );
+
+      return res.status(200).json(userUpdated);
+    } catch (error) {
+      next(error);
+    }
+  });
 };
 
 export const enrollUser: RequestHandler = async (req, res, next) => {
