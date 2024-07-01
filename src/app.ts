@@ -33,6 +33,10 @@ app.use("/api/payment/", paymentRouter);
 app.use("/api/tier/", tierRouter);
 app.use("/api/topic/", topicRouter);
 
+app.get("/keep-alive", (req, res) => {
+  res.send("Server is alive");
+});
+
 app.use((req, res, next) => {
   next(createHttpError(404, "Endpoint not found"));
 });
