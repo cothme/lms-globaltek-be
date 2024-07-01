@@ -31,6 +31,7 @@
     "@types/stripe": "^8.0.417",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
+    "cloudinary": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "envalid": "^8.0.0",
@@ -42,6 +43,7 @@
     "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0",
+    "sharp": "^0.33.4",
     "stripe": "^15.9.0"
   }
 }

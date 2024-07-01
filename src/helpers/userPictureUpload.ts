@@ -23,20 +23,20 @@ interface CloudinaryFile extends Express.Multer.File {
 const storage = multer.memoryStorage();
 export const upload: Multer = multer({ storage: storage });
 
-export const uploadToCloudinary = async (
+export const uploadUserImageToCloudinary = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const file: CloudinaryFile = req.file as CloudinaryFile; // Assuming multer sets req.file
+    const file: CloudinaryFile = req.file as CloudinaryFile;
     if (!file) {
-      return next(new Error("No file provided"));
+      return next();
     }
 
     // Resize the image using sharp (optional)
     const resizedBuffer: Buffer = await sharp(file.buffer)
-      .resize({ width: 800, height: 600 })
+      .resize({ width: 400, height: 400 })
       .toBuffer();
 
     // Upload the resized image buffer to Cloudinary
@@ -44,7 +44,7 @@ export const uploadToCloudinary = async (
       .upload_stream(
         {
           resource_type: "auto", // Automatically detect the resource type
-          folder: "uploads", // Optional folder in Cloudinary
+          folder: "uploads/user_pictures", // Optional folder in Cloudinary
         },
         (
           err: UploadApiErrorResponse | undefined,

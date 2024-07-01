@@ -2,27 +2,40 @@ import { RequestHandler } from "express";
 import createHttpError from "http-errors";
 import UserModel from "../models/user.model";
 import CourseModel from "../models/course.model";
-import multer from "multer";
-import { upload } from "../helpers/fileUpload";
+import { upload, uploadToCloudinary } from "../helpers/fileUpload";
+import { uploadUserImageToCloudinary } from "../helpers/userPictureUpload";
 import { jwtDecode } from "jwt-decode";
 import User from "../interfaces/User";
 import * as UserService from "../services/user.service";
-import Stripe from "stripe";
-const stripe = new Stripe(process.env.STRIPE_SECRET as string, {});
-import fs from "fs";
-import path from "path";
+import { v2 as cloudinary } from "cloudinary";
+import getImagePublicUrl from "../helpers/getImagePublicUrl";
 
 export const uploadFile: RequestHandler = (req, res, next) => {
-  upload.single("file")(req, res, (err) => {
+  upload.single("file")(req, res, async (err) => {
     if (err) {
-      return next(err);
+      return next(createHttpError(400, err));
     }
 
-    if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
-    }
+    uploadToCloudinary(req, res, async (err) => {
+      if (err) {
+        console.log(req.file);
 
-    return res.status(200).json({ file: req.file });
+        return next(createHttpError(400, err));
+      }
+
+      try {
+        if (!req.file) {
+          return res.status(400).json({ error: "No file uploaded" });
+        }
+
+        // Optionally, you can access Cloudinary URLs if needed
+        const cloudinaryUrl: string = req.body.cloudinaryUrl;
+
+        return res.status(200).json({ file: req.file, cloudinaryUrl });
+      } catch (error) {
+        next(error);
+      }
+    });
   });
 };
 export const signup: RequestHandler = async (req, res, next) => {
@@ -104,36 +117,49 @@ export const updateuser: RequestHandler = (req, res, next) => {
       return next(createHttpError(400, err));
     }
 
-    try {
-      const { userId } = req.params;
-      const { given_name, family_name, email, user_name, password } = req.body;
-      const picture = req.file ? req.file.filename : undefined;
-
-      // Fetch the existing user to get the current picture path
-      const existingUser = await UserModel.findById(userId);
-      if (!existingUser) {
-        throw createHttpError(404, "User not found");
+    uploadUserImageToCloudinary(req, res, async (err) => {
+      if (err) {
+        return next(createHttpError(400, err));
       }
 
-      // Delete the old picture if a new one is uploaded
-      if (picture && existingUser.picture) {
-        fs.unlink(
-          path.join(__dirname, "../../uploads", existingUser.picture),
-          (err) => {
-            if (err) console.log("Failed to delete old picture:", err);
+      try {
+        const { userId } = req.params;
+        const { given_name, family_name, email, user_name, password } =
+          req.body;
+        let picture: string | undefined = req.body.cloudinaryUrl;
+
+        // Fetch the existing user to get the current picture path
+        const existingUser = await UserModel.findById(userId);
+        if (!existingUser) {
+          throw createHttpError(404, "User not found");
+        }
+
+        // Delete the old Cloudinary image if a new one is uploaded
+        if (req.file && existingUser.picture) {
+          const public_id = getImagePublicUrl(existingUser.picture);
+          if (public_id) {
+            await cloudinary.uploader.destroy("uploads/" + public_id);
           }
+        }
+
+        // Update user details
+        const userUpdated = await UserService.updateUserService(
+          {
+            given_name,
+            family_name,
+            email,
+            user_name,
+            password,
+            picture,
+          },
+          userId
         );
+
+        return res.status(200).json(userUpdated);
+      } catch (error) {
+        next(error);
       }
-
-      const userUpdated = await UserService.updateUserService(
-        { given_name, family_name, email, user_name, password, picture },
-        userId
-      );
-
-      return res.status(200).json(userUpdated);
-    } catch (error) {
-      next(error);
-    }
+    });
   });
 };
 
