@@ -9,6 +9,7 @@ import adminRouter from "./routes/admin.routes";
 import paymentRouter from "./routes/payment.route";
 import tierRouter from "./routes/tier.routes";
 import topicRouter from "./routes/topic.routes";
+import fileRouter from "./routes/file.routes";
 
 import express, { Express, NextFunction, Request, Response } from "express";
 import createHttpError, { isHttpError } from "http-errors";
@@ -25,6 +26,7 @@ app.post("/api/payment/webhook", handleStripeWebhook);
 app.use(express.json());
 
 app.use(express.static("public"));
+app.use("/api/file/", fileRouter);
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/course", courseRouter);

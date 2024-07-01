@@ -23,7 +23,7 @@ interface CloudinaryFile extends Express.Multer.File {
 const storage = multer.memoryStorage();
 export const upload: Multer = multer({ storage: storage });
 
-export const uploadPdfToCloudinary = async (
+export const uploadVideoToCloudinary = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -35,15 +35,15 @@ export const uploadPdfToCloudinary = async (
     }
 
     // Ensure the uploaded file is a PDF
-    if (file.mimetype !== "application/pdf") {
-      return next(new Error("Only PDF files are allowed"));
+    if (file.mimetype !== "video/mp4") {
+      return next(new Error("Only mp4 files are allowed"));
     }
 
     // Upload the PDF buffer to Cloudinary
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         resource_type: "auto", // Automatically detect the resource type
-        folder: "uploads/pdfs", // Optional folder in Cloudinary
+        folder: "uploads/videos", // Optional folder in Cloudinary
       },
       (
         err: UploadApiErrorResponse | undefined,

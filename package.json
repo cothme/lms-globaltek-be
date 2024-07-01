@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node -r ts-node/register --max-old-space-size=8192 ./src/server.ts"
+    "start": "nodemon -r ts-node/register --max-old-space-size=8192 ./src/server.ts"
   },
   "keywords": [],
   "author": "",
