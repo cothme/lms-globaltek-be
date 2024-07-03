@@ -21,6 +21,8 @@ const app: Express = express();
 
 app.use(cors());
 app.use(express.static("uploads"));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api/payment/webhook", express.raw({ type: "application/json" }));
 app.post("/api/payment/webhook", handleStripeWebhook);
 app.use(express.json());
@@ -36,6 +38,8 @@ app.use("/api/tier/", tierRouter);
 app.use("/api/topic/", topicRouter);
 
 app.get("/keep-alive", (req, res) => {
+  console.log("Server is alive");
+
   res.send("Server is alive");
 });
 

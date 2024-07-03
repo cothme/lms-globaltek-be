@@ -1,5 +1,6 @@
 import TopicModel from "../models/topic.model";
 import Topic from "../interfaces/Topic";
+import CourseModel from "../models/course.model";
 
 export const findTopicByTitle = async (topic_title: string) => {
   return await TopicModel.findOne({ topic_title });
@@ -13,20 +14,18 @@ export const createTopic = async (topicData: Topic) => {
   return await TopicModel.create(topicData);
 };
 
-export const getAllTopics = async (
-  query: Topic,
-  page: number,
-  limit: number
-) => {
-  const allTopics = await TopicModel.find();
-  const offset = (page - 1) * limit;
+export const getAllTopics = async (courseName: string) => {
+  const course = await CourseModel.findOne({
+    course_title: courseName,
+  }).select("topics");
 
-  const topics = await TopicModel.find(query)
-    .sort({ createdAt: -1 })
-    .skip(offset)
-    .limit(limit);
+  const topicIds = course?.topics;
+  const topics = await TopicModel.find({ _id: { $in: topicIds } });
+  return topics;
+};
 
-  return { topics, allTopics: allTopics.length };
+export const getTopic = async (topicName: string) => {
+  return await TopicModel.findOne({ topic_title: topicName });
 };
 
 export const updateTopic = async (_id: string, topicData: Topic) => {
@@ -35,4 +34,14 @@ export const updateTopic = async (_id: string, topicData: Topic) => {
 
 export const deleteTopic = async (_id: string) => {
   return await TopicModel.findByIdAndDelete(_id);
+};
+
+export const removeTopicFromCourse = async (
+  courseName: string,
+  topicId: string
+) => {
+  return await CourseModel.updateMany(
+    { course_title: courseName },
+    { $pull: { topics: topicId } }
+  );
 };

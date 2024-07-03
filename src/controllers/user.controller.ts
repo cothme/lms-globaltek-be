@@ -121,28 +121,22 @@ export const updateuser: RequestHandler = (req, res, next) => {
       if (err) {
         return next(createHttpError(400, err));
       }
-
+      const cloudinaryUrl: string = req.body.cloudinaryUrl;
       try {
         const { userId } = req.params;
         const { given_name, family_name, email, user_name, password } =
           req.body;
-        let picture: string | undefined = req.body.cloudinaryUrl;
+        const picture = cloudinaryUrl;
 
-        // Fetch the existing user to get the current picture path
         const existingUser = await UserModel.findById(userId);
         if (!existingUser) {
           throw createHttpError(404, "User not found");
         }
+        const public_id = getImagePublicUrl(String(existingUser.picture));
+        console.log(public_id);
 
-        // Delete the old Cloudinary image if a new one is uploaded
-        if (req.file && existingUser.picture) {
-          const public_id = getImagePublicUrl(existingUser.picture);
-          if (public_id) {
-            await cloudinary.uploader.destroy("uploads/" + public_id);
-          }
-        }
+        await cloudinary.uploader.destroy("uploads/" + String(public_id));
 
-        // Update user details
         const userUpdated = await UserService.updateUserService(
           {
             given_name,

@@ -122,10 +122,10 @@ export const removeUserFromCourse = async (
   }
 };
 
-export const addTopicToCourse = async (courseId: string, topicId: string) => {
+export const addTopicToCourse = async (courseName: string, topicId: string) => {
   try {
     await CourseModel.updateOne(
-      { _id: courseId },
+      { course_title: courseName },
       { $push: { topics: topicId } }
     );
     return { success: true, message: "Topic added to course successfully" };

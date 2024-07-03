@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import * as TierService from "../services/tier.service";
 import Tier from "../interfaces/Tier";
+import createHttpError from "http-errors";
 
 export const createTier: RequestHandler = async (req, res, next) => {
   const tierData: Tier = req.body;
@@ -31,6 +32,9 @@ export const updateTier: RequestHandler = async (req, res, next) => {
   const { tierId } = req.params;
   const tierData: Tier = req.body;
   try {
+    if (tierData?.tier_price! > 1000) {
+      throw createHttpError(500, "Tier price must be less than 1000");
+    }
     const updatedTier = await TierService.updateTierService(tierId, tierData);
     res.status(200).json(updatedTier);
   } catch (error) {
