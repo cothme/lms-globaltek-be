@@ -80,31 +80,30 @@ export const updateTopicService = async (
 };
 
 export const deleteTopicService = async (
-  topicId: string,
+  topicName: string,
   courseName: string,
   token: string
 ) => {
   const admin = jwtDecode<User>(token);
   const authHeader = admin;
   const course = await CourseRepository.findCourseByTitle(courseName);
+  const topic = await TopicRepository.findTopicByTitle(topicName);
   if (!course) {
     throw createHttpError(404, "Course not found");
   }
   if (course.publisher != admin?.user_name) {
-    console.log(course.publisher, admin?.user_name);
-
     throw createHttpError(403, "Unauthorized");
   }
-  if (!topicId) {
-    throw createHttpError(400, "Topic ID is required");
+  if (!topicName) {
+    throw createHttpError(400, "Topic Name is required");
   }
-  const deleteTopic = await TopicRepository.deleteTopic(topicId);
+  const deleteTopic = await TopicRepository.deleteTopic(topicName);
   if (!deleteTopic) {
     throw createHttpError(404, "Topic not found");
   }
   const removeTopicFromCourse = await TopicRepository.removeTopicFromCourse(
     course.course_title,
-    topicId
+    String(topic?._id)
   );
   if (!removeTopicFromCourse) {
     throw createHttpError(500, "Internal Server Error");

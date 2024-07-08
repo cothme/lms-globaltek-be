@@ -32,8 +32,8 @@ export const updateTopic = async (_id: string, topicData: Topic) => {
   return await TopicModel.findByIdAndUpdate(_id, topicData, { new: true });
 };
 
-export const deleteTopic = async (_id: string) => {
-  return await TopicModel.findByIdAndDelete(_id);
+export const deleteTopic = async (topicName: string) => {
+  return await TopicModel.findOneAndDelete({ topic_title: topicName });
 };
 
 export const removeTopicFromCourse = async (

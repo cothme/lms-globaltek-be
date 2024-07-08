@@ -121,11 +121,15 @@ export const updateTopic: RequestHandler = async (req, res, next) => {
 
 export const deleteTopic: RequestHandler = async (req, res, next) => {
   const authHeader = String(req.headers.authorization);
-  const { topicId } = req.params;
+  const { topicName } = req.params;
   try {
-    const topic = await TopicModel.findOne({ _id: topicId });
+    const topic = await TopicModel.findOne({ topic_title: topicName });
+    console.log(topicName);
+
+    console.log(String(topic?.parent_course));
+
     await TopicService.deleteTopicService(
-      topicId,
+      topicName,
       String(topic?.parent_course),
       authHeader
     );

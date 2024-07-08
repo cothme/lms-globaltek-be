@@ -51,9 +51,15 @@ export const createAdmin: RequestHandler<
     }
 
     const existingEmail = await AdminModel.findOne({ email: email }).exec();
+    const existingUsername = await AdminModel.findOne({
+      user_name: user_name,
+    }).exec();
 
     if (existingEmail) {
       throw createHttpError(409, "Email already taken");
+    }
+    if (existingUsername) {
+      throw createHttpError(409, "Username already taken");
     }
 
     const passwordHashed = await bcrypt.hash(passwordRaw, 10);

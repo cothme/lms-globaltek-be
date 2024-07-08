@@ -10,6 +10,6 @@ router.post(
 router.get("/:courseName", TopicController.getTopics);
 router.get("/getTopic/:topicName", TopicController.getTopic);
 router.patch("/:topicId", requireAdminAuth, TopicController.updateTopic);
-router.delete("/:topicId", requireAdminAuth, TopicController.deleteTopic);
+router.delete("/:topicName", requireAdminAuth, TopicController.deleteTopic);
 
 export default router;
