@@ -9,6 +9,8 @@ import User from "../interfaces/User";
 import * as UserService from "../services/user.service";
 import { v2 as cloudinary } from "cloudinary";
 import getImagePublicUrl from "../helpers/getImagePublicUrl";
+import { validationResult } from "express-validator";
+import { signupValidation } from "../helpers/signupValidation";
 
 export const uploadFile: RequestHandler = (req, res, next) => {
   upload.single("file")(req, res, async (err) => {
@@ -39,6 +41,15 @@ export const uploadFile: RequestHandler = (req, res, next) => {
   });
 };
 export const signup: RequestHandler = async (req, res, next) => {
+  // Run validation
+  await Promise.all(signupValidation.map((validation) => validation.run(req)));
+
+  // Check for validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    req.body = "";
+    return res.status(400).json({ errors: errors.array() });
+  }
   const {
     given_name,
     family_name,
