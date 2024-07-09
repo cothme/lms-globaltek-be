@@ -127,7 +127,7 @@ export const loginAdmin: RequestHandler = async (req, res, next) => {
   const { user_name, password } = req.body;
 
   try {
-    if (!user_name || !password) {
+    if (!user_name || !password || !user_name.trim() || !password.trim()) {
       throw createHttpError(422, "Missing fields!");
     }
     const user = await AdminModel.findOne({ user_name: user_name });
@@ -144,9 +144,9 @@ export const loginAdmin: RequestHandler = async (req, res, next) => {
           jwt: token,
         });
       }
-      throw createHttpError(500, "Invalid credentials");
+      throw createHttpError(500, "Invaliddd credentials");
     }
-    throw createHttpError(500, "Invalid credentials");
+    throw createHttpError(500, "Invalidd credentials");
   } catch (error) {
     next(error);
   }
