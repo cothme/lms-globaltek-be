@@ -64,7 +64,6 @@ export const signup: RequestHandler = async (req, res, next) => {
     const newUser = await UserService.createUserService(
       {
         given_name,
-
         family_name,
         user_name,
         email,
