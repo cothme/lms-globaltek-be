@@ -135,3 +135,63 @@ export const deleteTopicService = async (
     throw createHttpError(500, "Internal Server Error");
   }
 };
+
+export const deletePdfService = async (topicName: string) => {
+  if (!topicName) {
+    throw createHttpError(400, "Topic ID is required");
+  }
+
+  // Retrieve the topic using the topicId
+  const existingTopic = await TopicRepository.findTopicByTitle(topicName);
+  if (!existingTopic) {
+    throw createHttpError(404, "Topic not found");
+  }
+
+  // Extract the public ID of the PDF from the Cloudinary URL
+  const pdfPublicId = extractPublicIdFromUrl(String(existingTopic.pdf));
+  if (!pdfPublicId) {
+    throw createHttpError(400, "No PDF found to delete");
+  }
+
+  try {
+    // Delete the PDF from Cloudinary
+    await cloudinary.uploader.destroy("uploads/" + String(pdfPublicId));
+  } catch (error) {
+    throw createHttpError(500, "Error deleting PDF from Cloudinary");
+  }
+
+  // Update the topic to remove the PDF URL
+  existingTopic.pdf = "";
+  await TopicRepository.updateTopic(String(existingTopic._id), { pdf: "" });
+};
+
+export const deleteVideoService = async (topicName: string) => {
+  if (!topicName) {
+    throw createHttpError(400, "Topic ID is required");
+  }
+
+  // Retrieve the topic using the topicId
+  const existingTopic = await TopicRepository.findTopicByTitle(topicName);
+  if (!existingTopic) {
+    throw createHttpError(404, "Topic not found");
+  }
+
+  // Extract the public ID of the video from the Cloudinary URL
+  const videoPublicId = extractPublicIdFromUrl(String(existingTopic.video));
+  if (!videoPublicId) {
+    throw createHttpError(400, "No video found to delete");
+  }
+
+  try {
+    // Delete the video from Cloudinary
+    await cloudinary.uploader.destroy("uploads/" + String(videoPublicId), {
+      resource_type: "video",
+    });
+  } catch (error) {
+    throw createHttpError(500, "Error deleting video from Cloudinary");
+  }
+
+  // Update the topic to remove the video URL
+  existingTopic.video = "";
+  await TopicRepository.updateTopic(String(existingTopic._id), { video: "" });
+};

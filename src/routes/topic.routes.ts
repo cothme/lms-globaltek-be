@@ -11,5 +11,15 @@ router.get("/:courseName", TopicController.getTopics);
 router.get("/getTopic/:topicName", TopicController.getTopic);
 router.patch("/:topicId", requireAdminAuth, TopicController.updateTopic);
 router.delete("/:topicName", requireAdminAuth, TopicController.deleteTopic);
+router.post(
+  "/deletepdf/:topicName",
+  requireAdminAuth,
+  TopicController.deletePdf
+);
+router.post(
+  "/deletevideo/:topicName",
+  requireAdminAuth,
+  TopicController.deleteVideo
+);
 
 export default router;

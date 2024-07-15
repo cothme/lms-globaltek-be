@@ -138,3 +138,33 @@ export const deleteTopic: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deletePdf: RequestHandler = async (req, res, next) => {
+  const { topicName } = req.params;
+
+  try {
+    // Call the service to delete the PDF
+    await TopicService.deletePdfService(topicName);
+
+    // Send a success response
+    res.status(200).json({ message: "PDF deleted successfully" });
+  } catch (error) {
+    // Pass the error to the error handling middleware
+    next(error);
+  }
+};
+
+export const deleteVideo: RequestHandler = async (req, res, next) => {
+  const { topicName } = req.params;
+
+  try {
+    // Call the service to delete the video
+    await TopicService.deletePdfService(topicName);
+
+    // Send a success response
+    res.status(200).json({ message: "Video deleted successfully" });
+  } catch (error) {
+    // Pass the error to the error handling middleware
+    next(error);
+  }
+};
